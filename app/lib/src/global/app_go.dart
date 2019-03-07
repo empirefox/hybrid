@@ -26,6 +26,7 @@ class AppGo {
 
     _channelId = channelId;
     _importance = importance;
+    _notificationId = notificationId;
 
     // init flutter_local_notifications
     final initializationSettings = InitializationSettings(

@@ -36,13 +36,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
-  card_settings:
-    dependency: "direct main"
-    description:
-      name: card_settings
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.4.0+1"
   charcode:
     dependency: transitive
     description:
@@ -111,29 +104,29 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.2"
-  flutter_colorpicker:
+  flutter_chips_input:
     dependency: transitive
     description:
-      name: flutter_colorpicker
+      name: flutter_chips_input
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.2.1"
-  flutter_cupertino_settings:
-    dependency: transitive
-    description:
-      name: flutter_cupertino_settings
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.0.9+1"
+    version: "1.1.0"
   flutter_dial_go:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "5bb48e3a527e14119d04d44eea0cfa0a920e255a"
+      resolved-ref: "1fd9e793ed46abfc3fdccf9ef43296b6cfedf17d"
       url: "https://github.com/empirefox/flutter_dial_go.git"
     source: git
     version: "0.0.1"
+  flutter_form_builder:
+    dependency: "direct main"
+    description:
+      name: flutter_form_builder
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.4.0"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -146,18 +139,18 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_masked_text:
-    dependency: transitive
-    description:
-      name: flutter_masked_text
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.7.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_typeahead:
+    dependency: transitive
+    description:
+      name: flutter_typeahead
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.2"
   front_end:
     dependency: transitive
     description:
@@ -375,6 +368,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  sy_flutter_widgets:
+    dependency: transitive
+    description:
+      name: sy_flutter_widgets
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.4"
   term_glyph:
     dependency: transitive
     description:

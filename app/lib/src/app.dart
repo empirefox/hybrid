@@ -11,7 +11,8 @@ import './l10n/app.l10n.dart';
 import './protos.dart';
 
 import './pages/about_page.dart';
-import './pages/configure/1_basic_page.dart';
+import './pages/configure/1_basic_page_builder.dart';
+import './pages/configure/configure_leaf_page.dart';
 import './pages/home_page.dart';
 
 class SimpleBlocDelegate extends BlocDelegate {
@@ -71,8 +72,11 @@ class MyAppState extends State<MyApp> {
             ),
         AppRoutes.configure: (context) => BlocProvider<HybridConfigBloc>(
               bloc: _hybridConfigBloc,
-              child: ConfigBasicPage(
-                config: Config(),
+              child: ConfigureLeafPage(
+                title: Text(AppLocalizations.of(context).configureBasicTitle),
+                formBuilder: ConfigBasicPageBuilder(
+                  config: Config()..dev = true,
+                ),
               ),
             ),
         AppRoutes.about: (context) => AboutPage(),

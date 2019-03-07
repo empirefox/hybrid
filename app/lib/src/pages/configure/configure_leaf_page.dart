@@ -1,84 +1,50 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:card_settings/card_settings.dart';
 
 import '../../l10n/app.l10n.dart';
 
-typedef CardSettings CardSettingsLayoutCallback(bool autoValidate);
-
-class ConfigureLeafPage extends StatefulWidget {
+class ConfigureLeafPage extends StatelessWidget {
   final Widget title;
-  final CardSettingsLayoutCallback onPortraitLayout;
-  final CardSettingsLayoutCallback onLandscapeLayout;
-  final VoidCallback onSaved;
+  final Widget formBuilder;
 
   const ConfigureLeafPage({
     Key key,
     @required this.title,
-    @required this.onPortraitLayout,
-    @required this.onLandscapeLayout,
-    @required this.onSaved,
+    @required this.formBuilder,
   }) : super(key: key);
 
   @override
-  _ConfigureLeafPageState createState() => _ConfigureLeafPageState();
-}
-
-class _ConfigureLeafPageState extends State<ConfigureLeafPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  bool _autoValidate = false;
-
-  @override
   Widget build(BuildContext context) {
-    final orientation = MediaQuery.of(context).orientation;
-
     return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Theme.of(context).backgroundColor,
-      appBar: appBar(),
-      body: Form(
-        key: _formKey,
-        child: (orientation == Orientation.portrait)
-            ? widget.onPortraitLayout(_autoValidate)
-            : widget.onLandscapeLayout(_autoValidate),
+      appBar: appBar(context),
+      body: Container(
+        margin: EdgeInsets.all(15.0),
+        child: formBuilder,
       ),
     );
   }
 
-  AppBar appBar() => AppBar(
-        title: widget.title,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.check),
-            onPressed: _savePressed,
-          ),
-        ],
+  AppBar appBar(BuildContext context) => AppBar(
+        title: title,
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: Icon(Icons.check),
+        //     onPressed: _savePressed,
+        //   ),
+        // ],
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: _backPressed,
+          onPressed: () => _backPressed(context),
         ),
       );
 
-  void _savePressed() {
-    final form = _formKey.currentState;
-
-    // TODO add server validation?
-    if (form.validate()) {
-      form.save();
-      widget.onSaved();
-    } else {
-      setState(() => _autoValidate = true);
-    }
-  }
-
-  Future<void> _backPressed() async {
+  Future<void> _backPressed(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
 
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(l10n.configureBackAlertTitle),
           content: SingleChildScrollView(
@@ -91,17 +57,15 @@ class _ConfigureLeafPageState extends State<ConfigureLeafPage> {
           actions: <Widget>[
             FlatButton(
               child: Text(l10n.configureBackAlertStay),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             FlatButton(
               child: Text(l10n.configureBackAlertGoBack),
-              onPressed: _goBack,
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
       },
     );
   }
-
-  void _goBack() => Navigator.of(context).pop();
 }

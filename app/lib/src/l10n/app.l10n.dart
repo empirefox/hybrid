@@ -191,29 +191,8 @@ class AppLocalizations {
 
   String get configureBasicFlushIntervalLabel {
     return Intl.message(
-      'FlushInterval',
+      'FlushInterval(ms)',
       name: 'configureBasicFlushIntervalLabel',
-    );
-  }
-
-  String get configureBasicFlushIntervalUnitLabel {
-    return Intl.message(
-      'ms',
-      name: 'configureBasicFlushIntervalUnitLabel',
-    );
-  }
-
-  String get configureBasicFlushIntervalNegtive {
-    return Intl.message(
-      'Accept positive values',
-      name: 'configureBasicFlushIntervalNegtive',
-    );
-  }
-
-  String get configureBasicFlushIntervalUint32 {
-    return Intl.message(
-      'Accept uint32 values',
-      name: 'configureBasicFlushIntervalUint32',
     );
   }
 
@@ -228,13 +207,6 @@ class AppLocalizations {
     return Intl.message(
       'Level',
       name: 'configureLogLevelLabel',
-    );
-  }
-
-  String get configureLogLevelEmpty {
-    return Intl.message(
-      'Must pick a level',
-      name: 'configureLogLevelEmpty',
     );
   }
 
