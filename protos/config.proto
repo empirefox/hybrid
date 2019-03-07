@@ -19,6 +19,22 @@ message ConfigTree {
   string rules_root_path = 13;
 }
 
+message Basic {
+  // @inject_tag: toml:",omitempty"
+  string version = 1;
+  // @inject_tag: toml:",omitempty" env:"HYBRID_DEV"
+  bool dev = 2;
+  // @inject_tag: toml:",omitempty" env:"HYBRID_BIND validate:"omitempty,tcp_addr"
+  string bind = 3;
+
+  // @inject_tag: toml:",omitempty" default:"200"
+  uint32 flush_interval_ms = 4;
+
+  // @inject_tag: toml:",omitempty" validate:"lte=732"
+  // Token is fallback token that will be veried by servers, both Ipfs
+  string token = 5;
+}
+
 message Log {
   // @inject_tag: toml:",omitempty"
   bool dev = 1;
@@ -144,26 +160,13 @@ message RouterItem {
 // HYBRID_ROUTER_DISABLED=a,b,c
 // @inject_field: tree *ConfigTree
 message Config {
-  // @inject_tag: toml:",omitempty"
-  string version = 1;
-  // @inject_tag: toml:",omitempty" env:"HYBRID_DEV"
-  bool dev = 2;
-  // @inject_tag: toml:",omitempty" env:"HYBRID_BIND validate:"omitempty,tcp_addr"
-  string bind = 3;
+  Basic basic = 1;
+  Log log = 2;
+  Ipfs ipfs = 3;
 
-  // @inject_tag: toml:",omitempty" default:"200"
-  uint32 flush_interval_ms = 4;
+  repeated IpfsServer ipfs_servers = 4;
+  repeated FileServer file_servers = 5;
+  repeated HttpProxyServer http_proxy_servers = 6;
 
-  // @inject_tag: toml:",omitempty" validate:"lte=732"
-  // Token is fallback token that will be veried by servers, both Ipfs
-  string token = 5;
-
-  Log log = 6;
-  Ipfs ipfs = 7;
-
-  repeated IpfsServer ipfs_servers = 8;
-  repeated FileServer file_servers = 9;
-  repeated HttpProxyServer http_proxy_servers = 10;
-
-  repeated RouterItem routers = 11;
+  repeated RouterItem routers = 7;
 }

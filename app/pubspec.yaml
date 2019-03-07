@@ -40,7 +40,7 @@ dependencies:
     git: https://github.com/empirefox/flutter_dial_go.git
   grpc:
     git: https://github.com/empirefox/grpc-dart.git
-  protobuf: ^0.10.4
+  protobuf: ^0.13.4
 
 dev_dependencies:
   flutter_test:

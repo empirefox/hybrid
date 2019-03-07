@@ -313,7 +313,7 @@ packages:
       name: protobuf
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.10.8"
+    version: "0.13.4"
   pub_semver:
     dependency: transitive
     description:

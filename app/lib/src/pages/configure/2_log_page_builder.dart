@@ -5,9 +5,9 @@ import '../../l10n/app.l10n.dart';
 import '../../protos.dart';
 
 class ConfigLogPageBuilder extends StatelessWidget {
-  final Log configLog;
+  final Log config;
 
-  const ConfigLogPageBuilder({Key key, this.configLog}) : super(key: key);
+  const ConfigLogPageBuilder({Key key, this.config}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +24,11 @@ class ConfigLogPageBuilder extends StatelessWidget {
       },
       onSubmit: (formValue) {
         if (formValue != null) {
-          configLog
+          config
             ..dev = formValue[l10n.devModeLabel]
             ..level = formValue[l10n.configureLogLevelLabel]
             ..target = formValue[l10n.configureLogTargetLabel];
-          print(configLog);
+          print(config);
         } else {
           print("Form invalid");
         }
@@ -38,7 +38,7 @@ class ConfigLogPageBuilder extends StatelessWidget {
         FormBuilderInput.switchInput(
           attribute: l10n.devModeLabel,
           label: l10n.devModeLabel,
-          value: configLog.dev,
+          value: config.dev,
         ),
         // level
         FormBuilderInput.dropdown(
@@ -61,7 +61,7 @@ class ConfigLogPageBuilder extends StatelessWidget {
           type: FormBuilderInput.TYPE_TEXT,
           label: l10n.configureLogTargetLabel,
           hint: l10n.configureLogTargetHint,
-          value: configLog.target,
+          value: config.target,
         ),
       ],
     );

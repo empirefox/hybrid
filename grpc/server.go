@@ -89,6 +89,17 @@ func (s *Server) GetConfigTree(_ context.Context, req *StartRequest) (*config.Co
 	return config.NewTree(req.Root)
 }
 
+func (s *Server) GetConfig(_ context.Context, req *GetConfigRequest) (*config.Config, error) {
+	tags := config.LoadTagsRead
+	if req.Load {
+		tags = config.LoadTagsNoErr
+	}
+	return config.LoadConfig(req.Root, tags, nil)
+}
+func (s *Server) SaveConfig(_ context.Context, req *SaveConfigRequest) (*empty.Empty, error) {
+	return nil, config.SaveConfig(req.Root, req.Config)
+}
+
 func (s *Server) Start(ctx context.Context, req *StartRequest) (_ *empty.Empty, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -97,7 +108,7 @@ func (s *Server) Start(ctx context.Context, req *StartRequest) (_ *empty.Empty, 
 	}
 	// not ctx from argument
 	s.service, err = Start(s.config.Context, req.Root, s.config.ConfigBindId)
-	if err == nil && s.service.config.Bind != "" {
+	if err == nil && s.service.config.Basic.Bind != "" {
 		err = s.service.node.StartConfigProxy()
 	}
 	return

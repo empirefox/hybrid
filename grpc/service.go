@@ -41,7 +41,7 @@ type Service struct {
 
 func Start(ctx context.Context, root string, configBindId uint32) (*Service, error) {
 	// 1. load config, root can be empty
-	c, err := config.LoadConfig(root, nil)
+	c, err := config.LoadConfig(root, config.LoadTagsDefault, nil)
 	if err != nil {
 		return nil, fmt.Errorf("LoadConfig err: %v", err)
 	}

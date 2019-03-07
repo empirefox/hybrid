@@ -19,7 +19,7 @@ func NewIpfs(ctx context.Context, c *config.Config, log *zap.Logger) (*ipfs.Ipfs
 		return nil, err
 	}
 
-	gatewayAddr, err := parseTCPMultiaddr(c.Bind)
+	gatewayAddr, err := parseTCPMultiaddr(c.Basic.Bind)
 	if err != nil {
 		log.Error("Config.Bind", zap.Error(err))
 		return nil, err

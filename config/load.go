@@ -3,13 +3,13 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 	"github.com/caarlos0/env"
 	"github.com/creasty/defaults"
 	version "github.com/hashicorp/go-version"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/tidwall/gjson"
 	validator "gopkg.in/go-playground/validator.v9"
 )
@@ -21,9 +21,29 @@ const (
 	ConfigVersionConstraint = "=1"
 )
 
-func LoadConfig(rootPath string, c *Config) (*Config, error) {
+const (
+	LoadTagEnv int = 1 << iota
+	LoadTagDefault
+	LoadTagCheckVersion
+	LoadTagValidate
+
+	// LoadTagsDefault used to start the node.
+	LoadTagsDefault = LoadTagEnv | LoadTagDefault | LoadTagCheckVersion | LoadTagValidate
+
+	// LoadTagsRead used to read raw config content.
+	LoadTagsRead = 0
+
+	// LoadTagsNoErr likes LoadTagsDefault without any validations.
+	LoadTagsNoErr = LoadTagEnv | LoadTagDefault
+)
+
+func LoadConfig(rootPath string, tags int, c *Config) (*Config, error) {
 	if rootPath == "" {
-		rootPath = filepath.Join(homedir.Dir(), ".hybrid")
+		homedir, err := os.UserHomeDir()
+		if err != nil {
+			return nil, err
+		}
+		rootPath = filepath.Join(homedir, ".hybrid")
 	}
 
 	if c == nil {
@@ -37,15 +57,19 @@ func LoadConfig(rootPath string, c *Config) (*Config, error) {
 	}
 
 	// 1. load env
-	err = env.Parse(c)
-	if err != nil {
-		return nil, err
+	if tags&LoadTagEnv == 1 {
+		err = env.Parse(c)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// 2. load default
-	err = defaults.Set(c)
-	if err != nil {
-		return nil, err
+	if tags&LoadTagDefault == 1 {
+		err = defaults.Set(c)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	configContent, err := ioutil.ReadFile(c.Tree().ConfigPath)
@@ -54,19 +78,21 @@ func LoadConfig(rootPath string, c *Config) (*Config, error) {
 	}
 
 	// 3. check config version
-	ver, err := version.NewVersion(gjson.GetBytes(configContent, "Version").String())
-	if err != nil {
-		return nil, err
-	}
+	if tags&LoadTagCheckVersion == 1 {
+		ver, err := version.NewVersion(gjson.GetBytes(configContent, "Version").String())
+		if err != nil {
+			return nil, err
+		}
 
-	constraints, err := version.NewConstraint(ConfigVersionConstraint)
-	if err != nil {
-		return nil, err
-	}
+		constraints, err := version.NewConstraint(ConfigVersionConstraint)
+		if err != nil {
+			return nil, err
+		}
 
-	if !constraints.Check(ver) {
-		return nil, fmt.Errorf("Current config version is v%s, need version '%s', but got v%s",
-			ConfigVersion, ConfigVersionConstraint, ver)
+		if !constraints.Check(ver) {
+			return nil, fmt.Errorf("Current config version is v%s, need version '%s', but got v%s",
+				ConfigVersion, ConfigVersionConstraint, ver)
+		}
 	}
 
 	// 4. unmarshal toml
@@ -76,10 +102,12 @@ func LoadConfig(rootPath string, c *Config) (*Config, error) {
 	}
 
 	// 5. do struct validate
-	validate := validator.New()
-	err = validate.Struct(c)
-	if err != nil {
-		return nil, err
+	if tags&LoadTagValidate == 1 {
+		validate := validator.New()
+		err = validate.Struct(c)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return c, nil

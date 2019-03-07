@@ -75,7 +75,7 @@ class MyAppState extends State<MyApp> {
               child: ConfigureLeafPage(
                 title: Text(AppLocalizations.of(context).configureBasicTitle),
                 formBuilder: ConfigBasicPageBuilder(
-                  config: Config()..dev = true,
+                  config: Basic()..dev = true,
                 ),
               ),
             ),

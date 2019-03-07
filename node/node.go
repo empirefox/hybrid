@@ -80,7 +80,7 @@ func New(nc Config) (*Node, error) {
 		routerDisabled: parseEnvList("HYBRID_ROUTER_DISABLED"),
 		fileRootDir:    t.FilesRootPath,
 		ruleRootDir:    t.RulesRootPath,
-		token:          []byte(nc.Config.Token),
+		token:          []byte(nc.Config.Basic.Token),
 	}
 
 	h2 := proxy.NewH2Client(proxy.H2ClientConfig{
@@ -170,7 +170,7 @@ func New(nc Config) (*Node, error) {
 	cc := &core.ContextConfig{
 		Transport:     http.DefaultTransport,
 		BufferPool:    bufpool.Default,
-		FlushInterval: time.Duration(c.FlushIntervalMs) * time.Millisecond,
+		FlushInterval: time.Duration(c.Basic.FlushIntervalMs) * time.Millisecond,
 	}
 
 	n.core = &core.Core{
@@ -201,11 +201,11 @@ func New(nc Config) (*Node, error) {
 }
 
 func (n *Node) StartConfigProxy() error {
-	if n.c.Bind == "" {
+	if n.c.Basic.Bind == "" {
 		return ErrConfigBindNotSet
 	}
 
-	ln, err := net.Listen("tcp", n.c.Bind)
+	ln, err := net.Listen("tcp", n.c.Basic.Bind)
 	if err != nil {
 		return err
 	}
