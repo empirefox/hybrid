@@ -1,5 +1,5 @@
 abstract class AppRoutes {
   static const home = '/';
-  static const configure = '/settings';
+  static const configure = '/configure';
   static const about = '/about';
 }

@@ -203,6 +203,13 @@ class AppLocalizations {
     );
   }
 
+  String get configureLogTitle {
+    return Intl.message(
+      'Log',
+      name: 'configureLogTitle',
+    );
+  }
+
   String get configureLogLevelLabel {
     return Intl.message(
       'Level',

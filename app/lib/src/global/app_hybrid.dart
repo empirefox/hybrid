@@ -7,6 +7,12 @@ import '../protos.dart';
 import './app_go.dart';
 
 class AppHybrid {
+  // global Config to edit
+  // TODO init unsavedConfig and lastSavedConfig, when app started.
+  static Config unsavedConfig = Config();
+  static Config lastSavedConfig;
+  static bool isConfigEdited() => unsavedConfig == lastSavedConfig;
+
   static HybridClient _client;
   static ClientChannel _clientChannel;
 

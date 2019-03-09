@@ -1,31 +1,56 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:protobuf/protobuf.dart' show GeneratedMessage;
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
+import '../../global.dart';
 import '../../l10n/app.l10n.dart';
 
-class ConfigureLeafPage extends StatelessWidget {
-  final Widget title;
-  final Widget formBuilder;
+import './config_form_inputs.dart';
 
-  const ConfigureLeafPage({
-    Key key,
-    @required this.title,
-    @required this.formBuilder,
-  }) : super(key: key);
+class ConfigureLeafPage<T extends GeneratedMessage> extends StatelessWidget
+    with ConfigureLeafPageMixin<T> {
+  final ConfigFormInputs<T> inputs;
+  ConfigureLeafPage({Key key, @required this.inputs}) : super(key: key);
+}
 
-  @override
+mixin ConfigureLeafPageMixin<T extends GeneratedMessage> {
+  ConfigFormInputs<T> get inputs;
+
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(context),
-      body: Container(
-        margin: EdgeInsets.all(15.0),
-        child: formBuilder,
+    return WillPopScope(
+      onWillPop: () => _onWillPop(context),
+      child: Scaffold(
+        appBar: appBar(context),
+        body: Container(
+          margin: EdgeInsets.all(15.0),
+          child: FormBuilder(
+            context,
+            autovalidate: true,
+            // readonly: true,
+            showResetButton: true,
+            // resetButtonContent: Text("Clear Form"),
+            onChanged: (formValue) => inputs.lastChanged = formValue,
+            onSubmit: (formValue) {
+              // TODO think deeply?
+              if (formValue != null) {
+                final config = toConfig(formValue);
+                setConfig(config);
+                print(config);
+                Navigator.of(context).pop();
+              } else {
+                print("Form invalid");
+              }
+            },
+            controls: inputs.buildControls(context, getConfig()),
+          ),
+        ),
       ),
     );
   }
 
   AppBar appBar(BuildContext context) => AppBar(
-        title: title,
+        title: Text(inputs.title(context)),
         // actions: <Widget>[
         //   IconButton(
         //     icon: Icon(Icons.check),
@@ -34,14 +59,18 @@ class ConfigureLeafPage extends StatelessWidget {
         // ],
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => _backPressed(context),
+          onPressed: () => Navigator.of(context).pop(),
         ),
       );
 
-  Future<void> _backPressed(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
+  Future<bool> _onWillPop(BuildContext context) {
+    print('onWillPop called');
+    if (toConfig(inputs.lastChanged) == getConfig()) {
+      return Future.value(true);
+    }
 
-    return showDialog<void>(
+    final l10n = AppLocalizations.of(context);
+    showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext dialogContext) {
@@ -67,5 +96,14 @@ class ConfigureLeafPage extends StatelessWidget {
         );
       },
     );
+    return Future.value(false);
   }
+
+  T getConfig() => AppHybrid.unsavedConfig.getField(inputs.tagNumber);
+  void setConfig(T c) => AppHybrid.unsavedConfig.setField(inputs.tagNumber, c);
+
+  T createEmptyConfigInstance() => getConfig().createEmptyInstance();
+
+  T toConfig(Map<String, dynamic> formValue) =>
+      createEmptyConfigInstance()..mergeFromJsonMap(formValue);
 }

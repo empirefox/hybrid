@@ -11,7 +11,7 @@ import './l10n/app.l10n.dart';
 import './protos.dart';
 
 import './pages/about_page.dart';
-import './pages/configure/1_basic_page_builder.dart';
+import './pages/configure/config_form_inputs.dart';
 import './pages/configure/configure_leaf_page.dart';
 import './pages/home_page.dart';
 
@@ -72,12 +72,7 @@ class MyAppState extends State<MyApp> {
             ),
         AppRoutes.configure: (context) => BlocProvider<HybridConfigBloc>(
               bloc: _hybridConfigBloc,
-              child: ConfigureLeafPage(
-                title: Text(AppLocalizations.of(context).configureBasicTitle),
-                formBuilder: ConfigBasicPageBuilder(
-                  config: Basic()..dev = true,
-                ),
-              ),
+              child: ConfigureLeafPage(inputs: BasicConfigFormInputs()),
             ),
         AppRoutes.about: (context) => AboutPage(),
       },
