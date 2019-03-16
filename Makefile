@@ -1,3 +1,29 @@
+#VERSION := $(shell git describe --tags)
+VERSION := $(shell git rev-parse --short HEAD)
+GOMOBILE_PKG := github.com/empirefox/hybrid/gomobile
+APP_PATH := ./app
+
+echo:
+	@echo GOMOBILE_PKG=${GOMOBILE_PKG}
+	@echo APP_PATH=${APP_PATH}
+	@echo VERSION=${VERSION}
+
+bind-android:
+	gomobile bind -target android -o ${APP_PATH}/android/go/go.aar \
+		${GOMOBILE_PKG} \
+		github.com/empirefox/flutter_dial_go/go/formobile
+
+bind-ios:
+	gomobile bind -target ios -o ${APP_PATH}/ios/Frameworks/Gomobile.framework \
+		${GOMOBILE_PKG} \
+		github.com/empirefox/flutter_dial_go/go/formobile
+
+clean:
+	rm -f ${APP_PATH}/android/go/*.aar
+	rm -f ${APP_PATH}/android/go/*.jar
+	rm -rf ${APP_PATH}/ios/Frameworks/Gomobile.framework
+
+
 protoc:
 	protoc -I../../golang/protobuf/ptypes/empty --dart_out=grpc:app/lib/src/google/protobuf empty.proto
 	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/authstore.proto
