@@ -38,12 +38,14 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
       _pbRoot.newFrom(_lastChanged) == _lastSavedRoot.current;
 
   void _doSaveConfig() {
-    setState(() => _saveConfig = _pbRoot.save().then((verrs) {
-          if (verrs.isEmpty) {
-            _lastSavedRoot.reset();
-          }
-          return verrs;
-        }));
+    setState(() {
+      _saveConfig = _pbRoot.save().then((verrs) {
+        if (verrs.isEmpty) {
+          _lastSavedRoot.reset();
+        }
+        return verrs;
+      });
+    });
   }
 
   @override
@@ -58,7 +60,7 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
           ),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(inputs.title(context)),
+          title: Text(inputs.title(context) + _pbRoot.routeSuffixForDev),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.of(context).pop(),
@@ -81,7 +83,7 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
                       err: snapshot.error,
                       onRetry: _doSaveConfig,
                     );
-                  return Row(
+                  return Column(
                     children: <Widget>[
                       FormBuilder(
                         context,
@@ -119,6 +121,7 @@ class _ValidatorErrors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (verrs == null) return Container();
     final list = verrs.map((err) => toListTile(context, err)).toList();
     return ListView(children: list);
   }

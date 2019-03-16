@@ -29,9 +29,13 @@ class ConfigurePage extends StatelessWidget {
           final node = configRootNode.findFromTags(tags);
           if (node.nodeType == NodeType.list && !node.isInList(tags))
             builder = (_) => ConfigureListPage();
-          else
-            builder = (_) =>
-                ConfigureLeafPage(inputs: ConfigFormInputs.of(node.pbtype));
+          else {
+            final inputs = ConfigFormInputs.of(node.pbtype);
+            if (inputs == null)
+              throw Exception(
+                  'Invalid route: ${settings.name}, inputs of pbtype not found ${node.pbtype}');
+            builder = (_) => ConfigureLeafPage(inputs: inputs);
+          }
         }
 
         return MaterialPageRoute(builder: builder, settings: settings);

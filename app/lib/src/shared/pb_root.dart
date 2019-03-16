@@ -3,6 +3,8 @@ import 'package:path/path.dart' show posix;
 import 'package:protobuf/protobuf.dart'
     show CreateBuilderFunc, MakeDefaultFunc, GeneratedMessage;
 
+import '../env.dart';
+
 abstract class PbRootHandler<R extends GeneratedMessage, E> {
   R saved();
   Future<E> save(R root);
@@ -25,7 +27,7 @@ class PbGetSetter {
       final tag = tags[i];
       final next = baseIsList ? _list[tag] : _one.getField(tag);
       // the first
-      if (nextIsList == null) nextIsList = _one.info_.fieldInfo[tag].isRepeated;
+      if (nextIsList == null) nextIsList = root.info_.fieldInfo[tag].isRepeated;
       if (baseIsList = nextIsList) {
         _list = next;
         // no list of list
@@ -37,8 +39,12 @@ class PbGetSetter {
       }
     }
 
+    if (nextIsList == null)
+      nextIsList = root.info_.fieldInfo[tags[0]].isRepeated;
     final length = tags.length;
-    final fromTag = nextIsList ? tags[length - 2] : tags[length - 1];
+    final fromTag = length == 1
+        ? tags[0]
+        : (nextIsList ? tags[length - 2] : tags[length - 1]);
     final fromFieldInfo = _one.info_.fieldInfo[fromTag];
 
     _isList = nextIsList;
@@ -102,6 +108,9 @@ class PbRoot<R extends GeneratedMessage, E> {
   // null value will compute _gs
   String _route;
   PbGetSetter _gs;
+  String get route => _route ?? routePath(context);
+
+  String get routeSuffixForDev => appEnv.dev ? '-${route}' : '';
 
   PbRoot(this.handler);
 

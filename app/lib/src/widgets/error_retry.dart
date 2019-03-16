@@ -9,7 +9,7 @@ class ErrorRetry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Row(
+        child: Column(
           children: <Widget>[
             Text('${err}', style: const TextStyle(color: Colors.red)),
             RaisedButton(onPressed: onRetry, child: const Text('Retry')),

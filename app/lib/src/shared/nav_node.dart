@@ -24,7 +24,7 @@ class NavNode {
   int nameField;
 
   NavNode.root({@required this.defaultInstance})
-      : assert(info.byIndex.isNotEmpty),
+      : assert(defaultInstance.info_.byIndex.isNotEmpty),
         assert(defaultInstance.info_.oneofs.isEmpty),
         pbtype = defaultInstance.runtimeType,
         info = defaultInstance.info_,
@@ -76,14 +76,17 @@ class NavNode {
   NavNode findFromTags(List<int> tags) {
     assert(tags.length == 1 || tags.length == 2);
     assert(children != null);
-    return children[tags[0]];
+    for (var child in children) {
+      if (child.tag == tags[0]) return child;
+    }
+    throw Exception('Invalid route tags: ${tags}');
   }
 
   bool isInList(List<int> tags) => tags.length == 2;
 
   static int _nameField(BuilderInfo info) => info.byName['name']?.tagNumber;
 
-  bool _checkValidLeafOneof(BuilderInfo info) {
+  static bool _checkValidLeafOneof(BuilderInfo info) {
     if (info.oneofs.isNotEmpty) {
       info.oneofs.keys.forEach((tag) {
         final fi = info.fieldInfo[tag];

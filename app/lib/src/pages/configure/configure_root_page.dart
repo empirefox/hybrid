@@ -14,14 +14,15 @@ class ConfigureRootPage extends StatelessWidget {
     final list = _rootNode.children.map<Widget>((node) {
       return ListTile(
         // leading: Icon(Icons.map),
-        title: Text(_l10n.$tagOf(node.pbtype, '${node.tag}')),
+        title: Text(_l10n.$tagOf(_rootNode.pbtype, '${node.tag}')),
         // subtitle: Text('data'),
         onTap: () => _pbRoot.goto(node.tag),
       );
     }).toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(_l10n.$messageOf(_rootNode.pbtype)),
+        title: Text(
+            _l10n.$messageOf(_rootNode.pbtype) + _pbRoot.routeSuffixForDev),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),

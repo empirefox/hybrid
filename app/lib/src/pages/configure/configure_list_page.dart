@@ -23,7 +23,9 @@ class ConfigureListPageState extends State<ConfigureListPage> {
   bool _reorder = false;
   Future<List<ValidatorV9Error>> _saveConfig;
 
-  ConfigureListPageState() : assert(_pbRoot.tags.length == 1);
+  ConfigureListPageState() {
+    assert(_pbRoot.tags.length == 1);
+  }
 
   Key _keyOf(int size, int i) {
     if (_keys == null) _keys = List<Key>.generate(size, (_) => UniqueKey());
@@ -53,7 +55,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_l10n.$messageOf(node.pbtype)),
+        title: Text(_l10n.$messageOf(node.pbtype) + _pbRoot.routeSuffixForDev),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -67,7 +69,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
         child: Container(
           margin: const EdgeInsets.all(15.0),
           child: _reorder
-              ? Row(
+              ? Column(
                   children: <Widget>[
                     ReorderableListView(
                       children: list,
@@ -77,9 +79,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
                       children: <Widget>[
                         IconButton(
                           icon: const Icon(Icons.replay),
-                          onPressed: () => setState(() {
-                                _pbRoot.reset();
-                              }),
+                          onPressed: () => setState(_pbRoot.reset),
                         ),
                         IconButton(
                           icon: const Icon(Icons.clear),
@@ -117,7 +117,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
                             err: snapshot.error,
                             onRetry: _doSaveConfig,
                           );
-                        return Row(
+                        return Column(
                           children: <Widget>[
                             ListView(
                               children: list,
