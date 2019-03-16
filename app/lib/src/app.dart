@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import './bloc/hybrid_config.bloc.dart';
 import './const/routes.dart';
 import './env.dart';
-import './global/app_go.dart';
+import './global.dart';
 import './l10n/app.l10n.dart';
-import './protos.dart';
+import './l10n/config.field.l10n.dart';
 
-import './pages/about_page.dart';
-import './pages/configure/config_form_inputs.dart';
-import './pages/configure/configure_leaf_page.dart';
+import './pages/configure/configure_page.dart';
 import './pages/home_page.dart';
+
+const kSupportedLanguages = ['en'];
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override
@@ -28,22 +26,15 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  final _hybridConfigBloc = HybridConfigBloc();
-
   @override
   Widget build(BuildContext context) {
-    AppGo.initOnce(
-      channelId: appEnv.channelId,
-      importance: appEnv.importance,
-      notificationId: appEnv.notificationId,
-      androidIcon: appEnv.androidIcon,
-      onSelectNotification: onSelectNotification,
-    );
+    initOnce();
     return MaterialApp(
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context).appName,
       localizationsDelegates: [
-        const AppLocalizationsDelegate(),
+        const AppLocalizationsDelegate(kSupportedLanguages),
+        const Field_configLocalizationsDelegate(kSupportedLanguages),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
@@ -64,19 +55,59 @@ class MyAppState extends State<MyApp> {
       ),
       initialRoute: AppRoutes.home,
       routes: {
-        AppRoutes.home: (context) => BlocProvider<HybridConfigBloc>(
-              bloc: _hybridConfigBloc,
-              child: HomePage(
-                title: 'Home',
-              ),
+        AppRoutes.home: (context) => HomePage(
+              title: 'Home',
             ),
-        AppRoutes.configure: (context) => BlocProvider<HybridConfigBloc>(
-              bloc: _hybridConfigBloc,
-              child: ConfigureLeafPage(inputs: BasicConfigFormInputs()),
-            ),
-        AppRoutes.about: (context) => AboutPage(),
+        AppRoutes.configure: pageWrap((context) => ConfigurePage()),
       },
     );
+  }
+
+  WidgetBuilder pageWrap(WidgetBuilder builder) {
+    return (context) => FutureBuilder(
+          future: initOnce(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return const Center(child: const CircularProgressIndicator());
+              case ConnectionState.none:
+                return Text(
+                    'Bug: initOnce()=null!\nIt should not happen here!');
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return Text(
+                    'Bug: initOnce() failed!\n${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                  );
+                return builder(context);
+            }
+          },
+        );
+  }
+
+  // Init
+
+  bool _inited = false;
+  Future<void> _initing;
+
+  Future<void> initOnce() {
+    if (_inited) return Future.value();
+    if (_initing != null) return _initing;
+    return _initing = _initOnce();
+  }
+
+  Future<void> _initOnce() async {
+    await AppGo.initOnce(
+      channelId: appEnv.channelId,
+      importance: appEnv.importance,
+      notificationId: appEnv.notificationId,
+      androidIcon: appEnv.androidIcon,
+      onSelectNotification: onSelectNotification,
+    );
+    await AppHybrid.getConfig();
+    _inited = true;
+    _initing = null;
   }
 
   Future<Null> onSelectNotification(String payload) async {

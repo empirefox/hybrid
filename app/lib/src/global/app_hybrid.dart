@@ -7,12 +7,9 @@ import '../protos.dart';
 import './app_go.dart';
 
 class AppHybrid {
-  // global Config to edit
-  // TODO init unsavedConfig and lastSavedConfig, when app started.
-  static Config unsavedConfig = Config();
-  static Config lastSavedConfig;
-  static bool isConfigEdited() => unsavedConfig == lastSavedConfig;
-
+  static final bool _isLoadConfig = false;
+  static Config _lastSavedConfig;
+  static Config get lastSavedConfig => _lastSavedConfig;
   static HybridClient _client;
   static ClientChannel _clientChannel;
 
@@ -60,20 +57,25 @@ class AppHybrid {
     return _configTree = tree;
   }
 
-  static Future<Config> getConfig({bool load}) async {
+  static Future<Config> getConfig() async {
+    if (_lastSavedConfig != null) return _lastSavedConfig;
     final tree = await configTree;
+    if (_lastSavedConfig != null) return _lastSavedConfig;
     final request = GetConfigRequest()
       ..root = tree.rootPath
-      ..load = load;
-    return await client.getConfig(request);
+      ..load = _isLoadConfig;
+    return _lastSavedConfig = await client.getConfig(request);
   }
 
-  static Future<void> saveConfig(Config config) async {
+  static Future<List<ValidatorV9Error>> saveConfig(Config config) async {
     final tree = await configTree;
     final request = SaveConfigRequest()
       ..root = tree.rootPath
       ..config = config;
-    await client.saveConfig(request);
+    final reply = await client.saveConfig(request);
+    final verrs = reply.errors ?? [];
+    if (verrs.isEmpty) _lastSavedConfig = config.clone();
+    return verrs;
   }
 
   static Future<void> start() async {

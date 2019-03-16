@@ -6,9 +6,14 @@ main() {
     expect(int.tryParse(ConfigFields.basic) != null, true);
   });
 
+  test('getTagNumber should get proto field number', () {
+    final tagNumber = Basic().getTagNumber('flushIntervalMs');
+    expect(tagNumber, int.parse(BasicFields.flushIntervalMs));
+  });
+
   test('getField should be ok', () {
     final pb = Basic()..flushIntervalMs = 10;
-    var tagNumber = int.parse(BasicFields.flush_interval_ms);
+    var tagNumber = int.parse(BasicFields.flushIntervalMs);
     expect(pb.getField(tagNumber), 10);
     tagNumber = int.parse(BasicFields.token);
     expect(pb.getField(tagNumber), '');
@@ -21,6 +26,6 @@ main() {
   test('pb2map should use proto tag numbers', () {
     final pb = Basic()..flushIntervalMs = 10;
     final pbmap = pb.writeToJsonMap();
-    expect(pbmap[BasicFields.flush_interval_ms], 10);
+    expect(pbmap[BasicFields.flushIntervalMs], 10);
   });
 }

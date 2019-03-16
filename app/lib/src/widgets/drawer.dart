@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../const/routes.dart';
-import '../l10n/app.l10n.dart';
+import '../l10n.dart';
+
+import './about_tile.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
   Drawer build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final _l10n = Field_configLocalizations.of(context);
     return Drawer(
       // Add a ListView to the drawer. This ensures the user can scroll
       // through the options in the Drawer if there isn't enough vertical
@@ -39,7 +42,7 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text(l10n.configure),
+            title: Text(_l10n.Config),
             leading: Icon(Icons.settings),
             onTap: () {
               Navigator.pop(context);
@@ -47,13 +50,7 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           Divider(),
-          ListTile(
-            title: Text(l10n.about),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, AppRoutes.about);
-            },
-          ),
+          AboutTile(),
         ],
       ),
     );

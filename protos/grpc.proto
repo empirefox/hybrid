@@ -6,13 +6,14 @@ option go_package = "github.com/empirefox/hybrid/grpc";
 import "google/protobuf/empty.proto";
 import "protos/config.proto";
 import "protos/authstore.proto";
+import "protos/validators.proto";
 
 service Hybrid {
   rpc GetVersion(google.protobuf.Empty) returns (Version) {}
   rpc GetConfigTree(StartRequest) returns (protos.ConfigTree) {}
 
   rpc GetConfig(GetConfigRequest) returns (protos.Config) {}
-  rpc SaveConfig(SaveConfigRequest) returns (google.protobuf.Empty) {}
+  rpc SaveConfig(SaveConfigRequest) returns (SaveConfigReply) {}
 
   rpc Start(StartRequest) returns (google.protobuf.Empty) {}
   rpc Stop(google.protobuf.Empty) returns (google.protobuf.Empty) {}
@@ -39,11 +40,11 @@ service Hybrid {
 }
 
 message Version {
-  string dial_ipfs_protocol = 1;
+  string dialIpfsProtocol = 1;
   string ipfs = 2;
-  int32 ipfs_repo = 3;
-  string libP2P_protocol = 4;
-  string go_libP2P = 5;
+  int32 ipfsRepo = 3;
+  string libP2PProtocol = 4;
+  string goLibP2P = 5;
   string golang = 6;
   string system = 7;
 }
@@ -59,6 +60,8 @@ message SaveConfigRequest {
   string root = 1;
   protos.Config config = 2;
 }
+
+message SaveConfigReply { repeated protos.ValidatorV9Error errors = 1; }
 
 message BindRequest {
   string network = 1;
@@ -77,12 +80,12 @@ message AddVerifyKeyRequest {
   bytes key = 1;
   repeated string tags = 2;
   string desc = 3;
-  uint32 life_seconds = 4;
+  uint32 lifeSeconds = 4;
 }
 message AddVerifyKeyReply {
   uint64 id = 1;
-  int64 created_at = 2;
-  int64 expires_at = 3;
+  int64 createdAt = 2;
+  int64 expiresAt = 3;
 }
 
 message VerifyKeySliceRequest {

@@ -15,6 +15,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 const (
@@ -94,10 +95,20 @@ func (s *Server) GetConfig(_ context.Context, req *GetConfigRequest) (*config.Co
 	if req.Load {
 		tags = config.LoadTagsNoErr
 	}
-	return config.LoadConfig(req.Root, tags, nil)
+	c, err := config.LoadConfig(req.Root, tags, nil)
+	if os.IsNotExist(err) {
+		// TODO create a base config file?
+		return new(config.Config), nil
+	}
+	return c, err
 }
-func (s *Server) SaveConfig(_ context.Context, req *SaveConfigRequest) (*empty.Empty, error) {
-	return nil, config.SaveConfig(req.Root, req.Config)
+func (s *Server) SaveConfig(_ context.Context, req *SaveConfigRequest) (*SaveConfigReply, error) {
+	err := config.SaveConfig(req.Root, req.Config)
+	verrs, ok := err.(validator.ValidationErrors)
+	if ok {
+		return &SaveConfigReply{Errors: NewValidatorV9Errors(verrs)}, nil
+	}
+	return nil, err
 }
 
 func (s *Server) Start(ctx context.Context, req *StartRequest) (_ *empty.Empty, err error) {

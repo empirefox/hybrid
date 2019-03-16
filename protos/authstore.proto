@@ -11,6 +11,6 @@ message AuthKey {
 
   string desc = 4;
 
-  int64 created_at = 5;
-  int64 expires_at = 6;
+  int64 createdAt = 5;
+  int64 expiresAt = 6;
 }

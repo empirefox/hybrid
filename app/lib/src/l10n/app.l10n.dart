@@ -112,24 +112,17 @@ class AppLocalizations {
     );
   }
 
-  String get configure {
+  String get addNewOne {
     return Intl.message(
-      'Configure',
-      name: 'configure',
+      'Add...',
+      name: 'addNewOne',
     );
   }
 
-  String get about {
+  String get reorder {
     return Intl.message(
-      'About',
-      name: 'about',
-    );
-  }
-
-  String get devModeLabel {
-    return Intl.message(
-      'Dev',
-      name: 'devModeLabel',
+      'Reorder',
+      name: 'reorder',
     );
   }
 
@@ -161,20 +154,6 @@ class AppLocalizations {
     );
   }
 
-  String get configureBasicTitle {
-    return Intl.message(
-      'Basic',
-      name: 'configureBasicTitle',
-    );
-  }
-
-  String get configureBasicBindLabel {
-    return Intl.message(
-      'Bind',
-      name: 'configureBasicBindLabel',
-    );
-  }
-
   String get configureBasicBindHint {
     return Intl.message(
       'Address that should be set to proxy settings',
@@ -189,38 +168,10 @@ class AppLocalizations {
     );
   }
 
-  String get configureBasicFlushIntervalLabel {
+  String get configureBasicFlushIntervalHint {
     return Intl.message(
-      'FlushInterval(ms)',
-      name: 'configureBasicFlushIntervalLabel',
-    );
-  }
-
-  String get configureBasicTokenLabel {
-    return Intl.message(
-      'Token',
-      name: 'configureBasicTokenLabel',
-    );
-  }
-
-  String get configureLogTitle {
-    return Intl.message(
-      'Log',
-      name: 'configureLogTitle',
-    );
-  }
-
-  String get configureLogLevelLabel {
-    return Intl.message(
-      'Level',
-      name: 'configureLogLevelLabel',
-    );
-  }
-
-  String get configureLogTargetLabel {
-    return Intl.message(
-      'Target',
-      name: 'configureLogTargetLabel',
+      'ms',
+      name: 'configureBasicFlushIntervalHint',
     );
   }
 
@@ -233,10 +184,11 @@ class AppLocalizations {
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
-  const AppLocalizationsDelegate();
+  final List<String> langs;
+  const AppLocalizationsDelegate(this.langs);
 
   @override
-  bool isSupported(Locale locale) => ['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => langs.contains(locale.languageCode);
 
   @override
   Future<AppLocalizations> load(Locale locale) => AppLocalizations.load(locale);
