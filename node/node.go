@@ -60,12 +60,10 @@ type Node struct {
 	closeOnce      sync.Once
 }
 
-func New(nc Config) (*Node, error) {
+func New(nc Config, t *config.ConfigTree) (*Node, error) {
 	c := nc.Config
 	localServers := nc.LocalServers
 	log := nc.Log
-
-	t := nc.Config.Tree()
 
 	n := Node{
 		log:          log,

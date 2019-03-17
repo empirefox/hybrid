@@ -3,8 +3,6 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 	"github.com/caarlos0/env"
@@ -37,23 +35,17 @@ const (
 	LoadTagsNoErr = LoadTagEnv | LoadTagDefault
 )
 
-func LoadConfig(rootPath string, tags int, c *Config) (*Config, error) {
-	if rootPath == "" {
-		homedir, err := os.UserHomeDir()
+func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
+	var err error
+	if tree == nil {
+		tree, err = NewDefaultTree()
 		if err != nil {
 			return nil, err
 		}
-		rootPath = filepath.Join(homedir, ".hybrid")
 	}
 
 	if c == nil {
 		c = new(Config)
-	}
-	c.SetTree(nil)
-
-	err := c.InitTree(rootPath)
-	if err != nil {
-		return nil, err
 	}
 
 	// 1. load env
@@ -72,7 +64,7 @@ func LoadConfig(rootPath string, tags int, c *Config) (*Config, error) {
 		}
 	}
 
-	configContent, err := ioutil.ReadFile(c.Tree().ConfigPath)
+	configContent, err := ioutil.ReadFile(tree.ConfigPath)
 	if err != nil {
 		return nil, err
 	}

@@ -908,17 +908,6 @@ type Config struct {
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
-
-	// custom fields
-	tree *ConfigTree
-}
-
-// custom fields getter/setter
-func (m *Config) Tree() *ConfigTree {
-	return m.tree
-}
-func (m *Config) SetTree(in *ConfigTree){
-	m.tree = in
 }
 
 func (m *Config) Reset()         { *m = Config{} }

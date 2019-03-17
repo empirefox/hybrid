@@ -27,6 +27,7 @@ var (
 type Service struct {
 	log            *zap.Logger
 	config         *config.Config
+	tree           *config.ConfigTree
 	node           *node.Node
 	ipfs           *ipfs.Ipfs
 	db             *badger.DB
@@ -40,8 +41,13 @@ type Service struct {
 }
 
 func Start(ctx context.Context, root string, configBindId uint32) (*Service, error) {
+	t, err := config.NewTree(root)
+	if err != nil {
+		return nil, fmt.Errorf("NewTree err: %v", err)
+	}
+
 	// 1. load config, root can be empty
-	c, err := config.LoadConfig(root, config.LoadTagsDefault, nil)
+	c, err := config.LoadConfig(t, config.LoadTagsDefault, nil)
 	if err != nil {
 		return nil, fmt.Errorf("LoadConfig err: %v", err)
 	}
@@ -60,7 +66,6 @@ func Start(ctx context.Context, root string, configBindId uint32) (*Service, err
 	}()
 
 	// 3. migrate-standalone need set IPFS_PATH
-	t := c.Tree()
 	os.Setenv(ipfsconfig.EnvDir, t.IpfsPath)
 
 	// 4. k/v db
@@ -96,7 +101,7 @@ func Start(ctx context.Context, root string, configBindId uint32) (*Service, err
 			cancel()
 		}
 	}()
-	hi, err := node.NewIpfs(ctx, c, log)
+	hi, err := node.NewIpfs(ctx, c, t, log)
 	if err != nil {
 		log.Error("NewIpfs", zap.Error(err))
 		return nil, err
@@ -117,7 +122,7 @@ func Start(ctx context.Context, root string, configBindId uint32) (*Service, err
 		Verify:       verifier.HybridVerify,
 		LocalServers: map[string]http.Handler{},
 		ConfigBindId: configBindId,
-	})
+	}, t)
 
 	if err != nil {
 		log.Error("NewClient", zap.Error(err))
@@ -130,6 +135,7 @@ func Start(ctx context.Context, root string, configBindId uint32) (*Service, err
 	}()
 
 	s.config = c
+	s.tree = t
 	s.node = node
 	s.ipfs = hi
 	s.db = db

@@ -31,7 +31,6 @@ protoc:
 	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/validators.proto
 	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/grpc.proto
 	protoc-go-inject-tag -input=config/config.pb.go
-	protoc-go-inject-field -input=config/config.pb.go
 
 	protoc -I. --dart-ext_out=dart_ext=defaults+field_names+field_l10n:app/lib/src protos/config.proto
 	dartfmt -w app/lib/src/protos/*.field.names.dart

@@ -91,11 +91,16 @@ func (s *Server) GetConfigTree(_ context.Context, req *StartRequest) (*config.Co
 }
 
 func (s *Server) GetConfig(_ context.Context, req *GetConfigRequest) (*config.Config, error) {
+	tree, err := config.NewTree(req.Root)
+	if err != nil {
+		return nil, err
+	}
+
 	tags := config.LoadTagsRead
 	if req.Load {
 		tags = config.LoadTagsNoErr
 	}
-	c, err := config.LoadConfig(req.Root, tags, nil)
+	c, err := config.LoadConfig(tree, tags, nil)
 	if os.IsNotExist(err) {
 		// TODO create a base config file?
 		return new(config.Config), nil
@@ -103,7 +108,12 @@ func (s *Server) GetConfig(_ context.Context, req *GetConfigRequest) (*config.Co
 	return c, err
 }
 func (s *Server) SaveConfig(_ context.Context, req *SaveConfigRequest) (*SaveConfigReply, error) {
-	err := config.SaveConfig(req.Root, req.Config)
+	tree, err := config.NewTree(req.Root)
+	if err != nil {
+		return nil, err
+	}
+
+	err = config.SaveConfig(tree, req.Config)
 	verrs, ok := err.(validator.ValidationErrors)
 	if ok {
 		return &SaveConfigReply{Errors: NewValidatorV9Errors(verrs)}, nil
@@ -223,7 +233,7 @@ func (s *Server) IpfsRepoFsck(_ context.Context, req *StartRequest) (*empty.Empt
 		return nil, err
 	}
 
-	if s.service != nil && rootPath == s.service.config.Tree().ConfigPath {
+	if s.service != nil && rootPath == s.service.tree.ConfigPath {
 		return nil, ErrIpfsRepoLocked
 	}
 	return nil, ipfs.Fsck(rootPath)

@@ -2,7 +2,6 @@ package config
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 	"github.com/caarlos0/env"
@@ -11,19 +10,13 @@ import (
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
-func SaveConfig(rootPath string, c *Config) error {
-	if rootPath == "" {
-		homedir, err := os.UserHomeDir()
+func SaveConfig(tree *ConfigTree, c *Config) error {
+	var err error
+	if tree == nil {
+		tree, err = NewDefaultTree()
 		if err != nil {
 			return err
 		}
-		rootPath = filepath.Join(homedir, ".hybrid")
-	}
-
-	c.SetTree(nil)
-	err := c.InitTree(rootPath)
-	if err != nil {
-		return err
 	}
 
 	tosave := proto.Clone(c).(*Config)
@@ -47,12 +40,12 @@ func SaveConfig(rootPath string, c *Config) error {
 		return err
 	}
 
-	err = os.MkdirAll(c.Tree().RootPath, 0666)
+	err = os.MkdirAll(tree.RootPath, 0666)
 	if err != nil {
 		return err
 	}
 
-	out, err := os.Create(c.Tree().ConfigPath)
+	out, err := os.Create(tree.ConfigPath)
 	if err != nil {
 		return err
 	}

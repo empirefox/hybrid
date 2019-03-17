@@ -12,7 +12,7 @@ import (
 	"github.com/ipsn/go-ipfs/core"
 )
 
-func NewIpfs(ctx context.Context, c *config.Config, log *zap.Logger) (*ipfs.Ipfs, error) {
+func NewIpfs(ctx context.Context, c *config.Config, t *config.ConfigTree, log *zap.Logger) (*ipfs.Ipfs, error) {
 	apiListenAddr, err := parseTCPMultiaddr(c.Ipfs.FakeApiListenAddr)
 	if err != nil {
 		log.Error("Ipfs.FakeApiListenAddr", zap.Error(err))
@@ -30,7 +30,7 @@ func NewIpfs(ctx context.Context, c *config.Config, log *zap.Logger) (*ipfs.Ipfs
 		GatewayListenAddr: gatewayAddr,
 		ExcludeIPNS:       func(host string) bool { return strings.HasSuffix(host, domain.HybridSuffix) },
 
-		RepoPath:         c.Tree().IpfsPath,
+		RepoPath:         t.IpfsPath,
 		Profile:          c.Ipfs.Profile,
 		AutoMigrate:      c.Ipfs.AutoMigrate,
 		EnableIpnsPubSub: c.Ipfs.EnableIpnsPubSub,
