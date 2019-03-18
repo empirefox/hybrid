@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:grpc/grpc.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,7 +15,7 @@ class AppHybrid {
   static HybridClient _client;
   static ClientChannel _clientChannel;
 
-  static String _appDocPath;
+  static Directory _appDocPath;
   static StartRequest _defaultStartRequest;
   static ConfigTree _configTree;
 
@@ -30,16 +32,16 @@ class AppHybrid {
     final root = await appDocPath;
     if (_defaultStartRequest != null) return _defaultStartRequest;
     _defaultStartRequest = StartRequest()
-      ..root = '${root}/${appEnv.hybridDirName}'
+      ..root = '${root.path}/${appEnv.hybridDirName}'
       ..freeze();
     return _defaultStartRequest;
   }
 
-  static Future<String> get appDocPath async {
+  static Future<Directory> get appDocPath async {
     if (_appDocPath != null) return _appDocPath;
     final directory = await getApplicationDocumentsDirectory();
     if (_appDocPath != null) return _appDocPath;
-    return _appDocPath = directory.path;
+    return _appDocPath = directory.parent;
   }
 
   static void dispose() {

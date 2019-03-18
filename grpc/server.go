@@ -114,6 +114,9 @@ func (s *Server) SaveConfig(_ context.Context, req *SaveConfigRequest) (*SaveCon
 	}
 
 	err = config.SaveConfig(tree, req.Config)
+	if err == nil {
+		return &SaveConfigReply{Errors: nil}, nil
+	}
 	verrs, ok := err.(validator.ValidationErrors)
 	if ok {
 		return &SaveConfigReply{Errors: NewValidatorV9Errors(verrs)}, nil

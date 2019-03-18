@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/caarlos0/env"
@@ -62,6 +63,11 @@ func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	_, err = os.Stat(tree.ConfigPath)
+	if err != nil {
+		return nil, err
 	}
 
 	configContent, err := ioutil.ReadFile(tree.ConfigPath)

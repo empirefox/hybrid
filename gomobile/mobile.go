@@ -59,19 +59,19 @@ func (m *fromGo) DoInitOnce() ConcurrentRunner {
 	m.init.Once(func() error {
 		err := zapsuit.RegisterTCPSink()
 		if err != nil {
-			log.Printf("register zap TCP sink: %v", err)
+			log.Printf("register zap TCP sink: %v\n", err)
 			return err
 		}
 
 		grpcPort, err := strconv.ParseUint(port, 10, 32)
 		if grpcPort <= 0 || grpcPort > math.MaxUint16 {
-			log.Printf("use default grpc port: %d, err: %v", defaultPort, err)
+			log.Printf("use default grpc port: %d, err: %v\n", defaultPort, err)
 			grpcPort = uint64(defaultPort)
 		}
 
 		ln, err := forgo.Listen(uint16(grpcPort))
 		if err != nil {
-			log.Printf("listener on %d err: %v", grpcPort, err)
+			log.Printf("listener on %d err: %v\n", grpcPort, err)
 			return err
 		}
 		defer func() {
@@ -110,7 +110,7 @@ func (m *fromGo) DoInitOnce() ConcurrentRunner {
 			ConfigBindId:     0,
 		})
 		if err != nil {
-			log.Printf("grpc.NewServer: %v", err)
+			log.Printf("grpc.NewServer: %v\n", err)
 			return err
 		}
 		defer func() {
@@ -122,7 +122,7 @@ func (m *fromGo) DoInitOnce() ConcurrentRunner {
 		go func() {
 			err := server.ServeGrpc(ln)
 			if err != nil {
-				log.Printf("ServeGrpc err: %v", err)
+				log.Printf("ServeGrpc err: %v\n", err)
 			}
 			cancel()
 		}()

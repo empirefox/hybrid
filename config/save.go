@@ -40,12 +40,14 @@ func SaveConfig(tree *ConfigTree, c *Config) error {
 		return err
 	}
 
-	err = os.MkdirAll(tree.RootPath, 0666)
+	// 0700 is ok for android
+	err = os.MkdirAll(tree.RootPath, 0700)
 	if err != nil {
 		return err
 	}
 
-	out, err := os.Create(tree.ConfigPath)
+	// 0701 is ok for android
+	out, err := os.OpenFile(tree.ConfigPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0701)
 	if err != nil {
 		return err
 	}

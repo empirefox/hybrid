@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../global.dart';
@@ -25,6 +27,13 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  Future<String> _stat() async {
+    final root = await AppHybrid.appDocPath;
+    final target = '${root.path}/.hybrid';
+    final stat = await FileStat.stat(target);
+    return '${target}\n  ${stat.modeString()}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,21 +43,21 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[AppPopupMenuButton(choices: widget.choices)],
       ),
       body: FutureBuilder(
-        future: AppHybrid.appDocPath,
+        future: _stat(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
             case ConnectionState.active:
               return const Center(child: const CircularProgressIndicator());
             case ConnectionState.none:
-              return Text('Bug: initOnce()=null!\nIt should not happen here!');
+              return Text('Bug!\nIt should not happen here!');
             case ConnectionState.done:
               if (snapshot.hasError)
                 return Text(
-                  'Bug: initOnce() failed!\n${snapshot.error}',
+                  'Bug: ${snapshot.error}',
                   style: const TextStyle(color: Colors.red),
                 );
-              return Text('appDoc: ${snapshot.data}');
+              return Text('stat: ${snapshot.data}');
           }
         },
       ),
