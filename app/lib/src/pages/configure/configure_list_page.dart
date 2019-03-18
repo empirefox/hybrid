@@ -23,9 +23,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
   bool _reorder = false;
   Future<List<ValidatorV9Error>> _saveConfig;
 
-  ConfigureListPageState() {
-    assert(_pbRoot.tags.length == 1);
-  }
+  ConfigureListPageState();
 
   Key _keyOf(int size, int i) {
     if (_keys == null) _keys = List<Key>.generate(size, (_) => UniqueKey());
@@ -38,6 +36,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
   Widget build(BuildContext context) {
     _lastSavedRoot.initContext(context);
     _pbRoot.initContext(context);
+    assert(_pbRoot.tags.length == 1);
     final l10n = AppLocalizations.of(context);
     final _l10n = Field_configLocalizations.of(context);
     final length = pbList.length;

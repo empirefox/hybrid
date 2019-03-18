@@ -126,6 +126,13 @@ class AppLocalizations {
     );
   }
 
+  String get dataview {
+    return Intl.message(
+      'View Data',
+      name: 'dataview',
+    );
+  }
+
   String get configureBackAlertTitle {
     return Intl.message(
       'Alert',

@@ -20,7 +20,9 @@ class ConfigurePage extends StatelessWidget {
         WidgetBuilder builder;
 
         if (settings.name == _initialRoute) {
-          builder = (_) => ConfigureRootPage();
+          builder = (_) => ConfigureRootPage(
+                onRootBack: () => Navigator.of(context).pop(),
+              );
         } else {
           final tags = posix
               .split(posix.relative(settings.name, from: _initialRoute))

@@ -20,7 +20,7 @@ func NewTree(rootPath string) (*ConfigTree, error) {
 		Version:       "1.0",
 		RootName:      filepath.Base(rootPath),
 		RootPath:      rootPath,
-		ConfigName:    "hybrid.json",
+		ConfigName:    "hybrid.toml",
 		IpfsName:      "ipfs",
 		StoreName:     "store",
 		FilesRootName: "files-root",

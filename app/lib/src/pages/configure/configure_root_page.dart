@@ -7,6 +7,10 @@ class ConfigureRootPage extends StatelessWidget {
   final _pbRoot = newConfigRoot();
   final _rootNode = configRootNode;
 
+  final VoidCallback onRootBack;
+
+  ConfigureRootPage({Key key, @required this.onRootBack}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     _pbRoot.initContext(context);
@@ -25,7 +29,7 @@ class ConfigureRootPage extends StatelessWidget {
             _l10n.$messageOf(_rootNode.pbtype) + _pbRoot.routeSuffixForDev),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: onRootBack,
         ),
       ),
       body: Container(

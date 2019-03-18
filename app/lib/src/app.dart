@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:dataview/dataview.dart';
 import 'package:bloc/bloc.dart';
 
 import './const/routes.dart';
@@ -53,12 +54,15 @@ class MyAppState extends State<MyApp> {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      initialRoute: AppRoutes.home,
+      home: HomePage(
+        title: 'Home',
+      ),
       routes: {
-        AppRoutes.home: (context) => HomePage(
-              title: 'Home',
-            ),
         AppRoutes.configure: pageWrap((context) => ConfigurePage()),
+        AppRoutes.dataview: (context) => DataviewPage(
+              "/",
+              uploadTo: "http://10.0.2.2:8082/upload",
+            ),
       },
     );
   }

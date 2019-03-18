@@ -46,7 +46,17 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.settings),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, AppRoutes.configure);
+              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.configure,
+                  ModalRoute.withName(AppRoutes.home));
+            },
+          ),
+          ListTile(
+            title: Text(l10n.dataview),
+            leading: Icon(Icons.folder),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamedAndRemoveUntil(context, AppRoutes.dataview,
+                  ModalRoute.withName(AppRoutes.home));
             },
           ),
           Divider(),
