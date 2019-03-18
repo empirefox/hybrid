@@ -37,11 +37,12 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
       _lastChanged == null ||
       _pbRoot.newFrom(_lastChanged) == _lastSavedRoot.current;
 
-  void _doSaveConfig() {
+  void _doSaveConfig(BuildContext context) {
     setState(() {
       _saveConfig = _pbRoot.save().then((verrs) {
         if (verrs.isEmpty) {
-          _lastSavedRoot.reset();
+          // _lastSavedRoot.reset();
+          Navigator.of(context).pop();
         }
         return verrs;
       });
@@ -81,7 +82,7 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
                   if (snapshot.hasError)
                     return ErrorRetry(
                       err: snapshot.error,
-                      onRetry: _doSaveConfig,
+                      onRetry: () => _doSaveConfig(context),
                     );
                   return Column(
                     children: <Widget>[
@@ -97,7 +98,7 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
                             return debugPrint("Form invalid");
                           if (_needNotSave()) return;
                           _pbRoot.current = _pbRoot.newFrom(formValue);
-                          _doSaveConfig();
+                          _doSaveConfig(context);
                         },
                         controls:
                             inputs.buildControls(context, _pbRoot.current),
@@ -121,15 +122,18 @@ class _ValidatorErrors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (verrs == null) return Container();
-    final list = verrs.map((err) => toListTile(context, err)).toList();
-    return ListView(children: list);
+    if (verrs == null || verrs.isEmpty) return Container();
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: verrs.length,
+      itemBuilder: _toListTile,
+    );
   }
 
-  Widget toListTile(BuildContext context, ValidatorV9Error err) {
+  Widget _toListTile(BuildContext context, int i) {
     return ListTile(
-      leading: Text(err.field_5),
-      title: Text(err.tag),
+      leading: Text(verrs[i].field_5),
+      title: Text(verrs[i].tag),
     );
   }
 }
