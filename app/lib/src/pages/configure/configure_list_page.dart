@@ -30,7 +30,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
     return _keys[i];
   }
 
-  bool _noNeedAsk() {
+  bool _sameAsSaved() {
     final current = _lastSavedRoot.current;
     for (var i = 0; i < pbList.length; i++) {
       if (pbList[i] != current[i]) return false;
@@ -66,28 +66,32 @@ class ConfigureListPageState extends State<ConfigureListPage> {
       body: WillPopScope(
         onWillPop: () => onStayOrWillPop(
             context: context,
-            noNeedAsk: _noNeedAsk,
+            noNeedAsk: _sameAsSaved,
             onGoBack: () => Navigator.of(context).pop()),
         child: Container(
           margin: const EdgeInsets.all(15.0),
           child: _reorder
               ? Column(
                   children: <Widget>[
-                    ReorderableListView(
-                      children: list,
-                      onReorder: _handleReorder,
+                    Flexible(
+                      child: ReorderableListView(
+                        children: list,
+                        onReorder: _handleReorder,
+                      ),
                     ),
                     ButtonBar(
                       children: <Widget>[
                         IconButton(
                           icon: const Icon(Icons.replay),
-                          onPressed: () => setState(_pbRoot.reset),
+                          onPressed: () {
+                            if (!_sameAsSaved()) _doReset();
+                          },
                         ),
                         IconButton(
                           icon: const Icon(Icons.clear),
                           onPressed: () {
-                            if (_noNeedAsk())
-                              _doResetAndToReorded();
+                            if (_sameAsSaved())
+                              _doToReorded();
                             else
                               onStayOrWillPop(
                                 context: context,
@@ -97,7 +101,12 @@ class ConfigureListPageState extends State<ConfigureListPage> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.done),
-                          onPressed: _doSaveConfig,
+                          onPressed: () {
+                            if (_sameAsSaved())
+                              _doToReorded();
+                            else
+                              _doSaveConfig();
+                          },
                         ),
                       ],
                     ),
@@ -120,8 +129,10 @@ class ConfigureListPageState extends State<ConfigureListPage> {
                           );
                         return Column(
                           children: <Widget>[
-                            ListView(
-                              children: list,
+                            Flexible(
+                              child: ListView(
+                                children: list,
+                              ),
                             ),
                             ButtonBar(
                               children: <Widget>[
@@ -148,6 +159,8 @@ class ConfigureListPageState extends State<ConfigureListPage> {
     );
   }
 
+  void _doReset() => setState(_pbRoot.reset);
+  void _doToReorded() => setState(() => _reorder = false);
   void _doResetAndToReorded() => setState(() {
         _pbRoot.reset();
         _reorder = false;

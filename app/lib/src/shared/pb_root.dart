@@ -39,19 +39,18 @@ class PbGetSetter {
       }
     }
 
-    if (nextIsList == null)
-      nextIsList = root.info_.fieldInfo[tags[0]].isRepeated;
     final length = tags.length;
     final fromTag = length == 1
         ? tags[0]
-        : (nextIsList ? tags[length - 2] : tags[length - 1]);
+        : (baseIsList ? tags[length - 2] : tags[length - 1]);
     final fromFieldInfo = _one.info_.fieldInfo[fromTag];
 
-    _isList = nextIsList;
+    _isList = baseIsList;
     _n = tags.last;
     _isCreate = _isList && _n < 0;
     _subBuilder = fromFieldInfo.subBuilder;
     _makeDefault = fromFieldInfo.makeDefault;
+    _list = _list ?? [];
     if (_isCreate) _n = _list.length;
   }
 
