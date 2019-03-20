@@ -14,34 +14,45 @@ class ConfigurePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      initialRoute: _initialRoute,
-      onGenerateRoute: (RouteSettings settings) {
-        WidgetBuilder builder;
-
-        if (settings.name == _initialRoute) {
-          builder = (_) => ConfigureRootPage(
-                onRootBack: () => Navigator.of(context).pop(),
-              );
-        } else {
-          final tags = posix
-              .split(posix.relative(settings.name, from: _initialRoute))
-              .map((s) => int.parse(s))
-              .toList();
-          final node = configRootNode.findFromTags(tags);
-          if (node.nodeType == NodeType.list && !node.isInList(tags))
-            builder = (_) => ConfigureListPage();
-          else {
-            final inputs = ConfigFormInputs.of(node.pbtype);
-            if (inputs == null)
-              throw Exception(
-                  'Invalid route: ${settings.name}, inputs of pbtype not found ${node.pbtype}');
-            builder = (_) => ConfigureLeafPage(inputs: inputs);
-          }
-        }
-
-        return MaterialPageRoute(builder: builder, settings: settings);
+    MaterialPageRoute _router;
+    return WillPopScope(
+      onWillPop: () {
+        if (_router != null && _router.canPop)
+          _router.willPop();
+        else
+          Navigator.of(context).pop();
+        return Future.value(false);
       },
+      child: Navigator(
+        initialRoute: _initialRoute,
+        onGenerateRoute: (RouteSettings settings) {
+          WidgetBuilder builder;
+
+          if (settings.name == _initialRoute) {
+            builder = (_) => ConfigureRootPage(
+                  onRootBack: () => Navigator.of(context).pop(),
+                );
+          } else {
+            final tags = posix
+                .split(posix.relative(settings.name, from: _initialRoute))
+                .map((s) => int.parse(s))
+                .toList();
+            final node = configRootNode.findFromTags(tags);
+            if (node.nodeType == NodeType.list && !node.isInList(tags))
+              builder = (_) => ConfigureListPage();
+            else {
+              final inputs = ConfigFormInputs.of(node.pbtype);
+              if (inputs == null)
+                throw Exception(
+                    'Invalid route: ${settings.name}, inputs of pbtype not found ${node.pbtype}');
+              builder = (_) => ConfigureLeafPage(inputs: inputs);
+            }
+          }
+
+          return _router =
+              MaterialPageRoute(builder: builder, settings: settings);
+        },
+      ),
     );
   }
 }

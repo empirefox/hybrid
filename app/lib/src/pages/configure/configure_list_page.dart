@@ -30,7 +30,13 @@ class ConfigureListPageState extends State<ConfigureListPage> {
     return _keys[i];
   }
 
-  bool _noNeedAsk() => pbList == _lastSavedRoot.current;
+  bool _noNeedAsk() {
+    final current = _lastSavedRoot.current;
+    for (var i = 0; i < pbList.length; i++) {
+      if (pbList[i] != current[i]) return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +61,7 @@ class ConfigureListPageState extends State<ConfigureListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_l10n.$messageOf(node.pbtype) + _pbRoot.routeSuffixForDev),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: BackButton(),
       ),
       body: WillPopScope(
         onWillPop: () => onStayOrWillPop(
@@ -88,7 +91,6 @@ class ConfigureListPageState extends State<ConfigureListPage> {
                             else
                               onStayOrWillPop(
                                 context: context,
-                                noNeedAsk: () => false,
                                 onGoBack: _doResetAndToReorded,
                               );
                           },

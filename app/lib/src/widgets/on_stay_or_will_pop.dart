@@ -7,11 +7,11 @@ typedef NoNeedAskCallback = bool Function();
 
 Future<bool> onStayOrWillPop(
     {@required BuildContext context,
-    @required NoNeedAskCallback noNeedAsk,
-    @required VoidCallback onGoBack}) {
-  print('onWillPop called');
-  if (noNeedAsk()) {
-    return Future.value(true);
+    @required VoidCallback onGoBack,
+    NoNeedAskCallback noNeedAsk}) {
+  if (noNeedAsk != null && noNeedAsk()) {
+    Navigator.of(context).pop();
+    return Future.value(false);
   }
 
   final l10n = AppLocalizations.of(context);

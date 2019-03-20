@@ -35,13 +35,14 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
   Map<String, dynamic> _lastChanged;
   bool _needNotSave() =>
       _lastChanged == null ||
-      _pbRoot.newFrom(_lastChanged) == _lastSavedRoot.current;
+      _pbRoot.newFrom(_lastChanged) ==
+          inputs.cloneWithDefault(_lastSavedRoot.current);
 
   void _doSaveConfig(BuildContext context) {
     setState(() {
       _saveConfig = _pbRoot.save().then((verrs) {
         if (verrs.isEmpty) {
-          // _lastSavedRoot.reset();
+          _lastChanged = null;
           Navigator.of(context).pop();
         }
         return verrs;
@@ -53,62 +54,56 @@ mixin ConfigureLeafPageStateMixin<T extends GeneratedMessage>
   Widget build(BuildContext context) {
     _lastSavedRoot.initContext(context);
     _pbRoot.initContext(context);
-    return WillPopScope(
-      onWillPop: () => onStayOrWillPop(
-            context: context,
-            noNeedAsk: _needNotSave,
-            onGoBack: () => Navigator.of(context).pop(),
-          ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(inputs.title(context) + _pbRoot.routeSuffixForDev),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-        body: Container(
-          margin: const EdgeInsets.all(15.0),
-          child: FutureBuilder(
-            future: _saveConfig,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<ValidatorV9Error>> snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.waiting:
-                case ConnectionState.active:
-                  return const Center(child: CircularProgressIndicator());
-                case ConnectionState.none:
-                case ConnectionState.done:
-                  if (snapshot.hasError)
-                    return ErrorRetry(
-                      err: snapshot.error,
-                      onRetry: () => _doSaveConfig(context),
-                    );
-                  return Column(
-                    children: <Widget>[
-                      FormBuilder(
-                        context,
-                        autovalidate: true,
-                        // readonly: true,
-                        showResetButton: true,
-                        // resetButtonContent: Text("Clear Form"),
-                        onChanged: (formValue) => _lastChanged = formValue,
-                        onSubmit: (formValue) {
-                          if (formValue == null)
-                            return debugPrint("Form invalid");
-                          if (_needNotSave()) return;
-                          _pbRoot.current = _pbRoot.newFrom(formValue);
-                          _doSaveConfig(context);
-                        },
-                        controls:
-                            inputs.buildControls(context, _pbRoot.current),
-                      ),
-                      _ValidatorErrors(verrs: snapshot.data),
-                    ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(inputs.title(context) + _pbRoot.routeSuffixForDev),
+        leading: BackButton(),
+      ),
+      body: Container(
+        margin: const EdgeInsets.all(15.0),
+        child: FutureBuilder(
+          future: _saveConfig,
+          builder: (BuildContext context,
+              AsyncSnapshot<List<ValidatorV9Error>> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return const Center(child: CircularProgressIndicator());
+              case ConnectionState.none:
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return ErrorRetry(
+                    err: snapshot.error,
+                    onRetry: () => _doSaveConfig(context),
                   );
-              }
-            },
-          ),
+                return Column(
+                  children: <Widget>[
+                    FormBuilder(
+                      context,
+                      autovalidate: true,
+                      // readonly: true,
+                      showResetButton: true,
+                      // resetButtonContent: Text("Clear Form"),
+                      onChanged: (formValue) => _lastChanged = formValue,
+                      onWillPop: () => onStayOrWillPop(
+                            context: context,
+                            noNeedAsk: _needNotSave,
+                            onGoBack: () => Navigator.of(context).pop(),
+                          ),
+                      onSubmit: (formValue) {
+                        if (formValue == null)
+                          return debugPrint("Form invalid");
+                        if (_needNotSave()) return;
+                        _pbRoot.current = _pbRoot.newFrom(formValue);
+                        _doSaveConfig(context);
+                      },
+                      controls: inputs.buildControls(context, _pbRoot.current),
+                    ),
+                    _ValidatorErrors(verrs: snapshot.data),
+                  ],
+                );
+            }
+          },
         ),
       ),
     );
@@ -142,6 +137,20 @@ abstract class ConfigFormInputs<T extends GeneratedMessage> {
   String title(BuildContext context);
   List<FormBuilderInput> buildControls(BuildContext context, T config);
 
+  T cloneWithDefault(T input) {
+    input = input.clone();
+    final Map<int, bool> oneofs = <int, bool>{};
+    input.info_.oneofs.forEach((tag, oneof) {
+      oneofs[tag] = input.$_whichOneof(oneof) == tag;
+    });
+    input.info_.byIndex.forEach((fi) {
+      final selected = oneofs[fi.tagNumber];
+      if (selected == null || selected)
+        input.setField(fi.tagNumber, input.getField(fi.tagNumber));
+    });
+    return input;
+  }
+
   static final Map<Type, dynamic> _typeToInstances = <Type, dynamic>{
     Basic: BasicConfigFormInputs(),
     Log: LogConfigFormInputs(),
@@ -157,6 +166,11 @@ class BasicConfigFormInputs extends ConfigFormInputs<Basic> {
   @override
   String title(BuildContext context) =>
       Field_configLocalizations.of(context).basic_Config;
+
+  @override
+  Basic cloneWithDefault(Basic input) {
+    return super.cloneWithDefault(input)..clearVersion();
+  }
 
   @override
   List<FormBuilderInput> buildControls(BuildContext context, Basic config) {

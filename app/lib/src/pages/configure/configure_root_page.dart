@@ -27,10 +27,9 @@ class ConfigureRootPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
             _l10n.$messageOf(_rootNode.pbtype) + _pbRoot.routeSuffixForDev),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: onRootBack,
-        ),
+        leading: ModalRoute.of(context).canPop
+            ? const BackButton()
+            : IconButton(icon: const BackButtonIcon(), onPressed: onRootBack),
       ),
       body: Container(
         margin: const EdgeInsets.all(15.0),

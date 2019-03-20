@@ -121,10 +121,7 @@ class PbRoot<R extends GeneratedMessage, E> {
   Future<E> save() => handler.save(root);
 
   Future<T> goto<T>(int tag, {Object arguments}) =>
-      Navigator.pushNamedAndRemoveUntil<T>(
-          context,
-          posix.join(routePath(context), '${tag}'),
-          ModalRoute.withName(Navigator.of(context).widget.initialRoute),
+      Navigator.pushNamed<T>(context, posix.join(routePath(context), '${tag}'),
           arguments: arguments);
 
   GeneratedMessage newFrom(Map<String, dynamic> m) =>
