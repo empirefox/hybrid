@@ -7,14 +7,17 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func NewLogger(config *config.Config, options ...zap.Option) (*zap.Logger, error) {
-	zapsuitConfig := zapsuit.Config{
-		Dev:    config.Log.Dev,
-		Target: config.Log.Target,
+func NewLogger(c *config.Log, options ...zap.Option) (*zap.Logger, error) {
+	if c == nil {
+		c = new(config.Log)
 	}
-	if config.Log.Level != "" {
+	zapsuitConfig := zapsuit.Config{
+		Dev:    c.Dev,
+		Target: c.Target,
+	}
+	if c.Level != "" {
 		var level zapcore.Level
-		err := level.Set(config.Log.Level)
+		err := level.Set(c.Level)
 		if err != nil {
 			return nil, err
 		}

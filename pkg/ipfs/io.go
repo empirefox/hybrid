@@ -1,33 +1,49 @@
 package ipfs
 
 import (
-	coreiface "github.com/ipsn/go-ipfs/core/coreapi/interface"
-	"github.com/ipsn/go-ipfs/core/coreapi/interface/options"
+	"context"
 
-	files "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-files"
+	files "github.com/ipfs/go-ipfs-files"
+	"github.com/ipfs/interface-go-ipfs-core/options"
+	"github.com/ipfs/interface-go-ipfs-core/path"
 )
 
-func (hi *Ipfs) Get(path string) (coreiface.UnixfsFile, error) {
-	p, err := coreiface.ParsePath(path)
-	if err != nil {
-		return nil, err
-	}
-
+func (hi *Ipfs) Get(ctx context.Context, p string) (files.Node, error) {
 	api, err := hi.coreAPI()
 	if err != nil {
 		return nil, err
 	}
 
-	return api.Unixfs().Get(hi.ctx, p)
+	c, cancel := context.WithCancel(hi.ctx)
+	defer cancel()
+
+	go func() {
+		select {
+		case <-ctx.Done():
+			cancel()
+		}
+	}()
+
+	return api.Unixfs().Get(c, path.New(p))
 }
 
-func (hi *Ipfs) Add(file files.File, settings options.UnixfsAddSettings) (coreiface.ResolvedPath, error) {
+func (hi *Ipfs) Add(ctx context.Context, file files.File, settings options.UnixfsAddSettings) (path.Resolved, error) {
 	api, err := hi.coreAPI()
 	if err != nil {
 		return nil, err
 	}
 
-	return api.Unixfs().Add(hi.ctx, file, func(target *options.UnixfsAddSettings) error {
+	c, cancel := context.WithCancel(hi.ctx)
+	defer cancel()
+
+	go func() {
+		select {
+		case <-ctx.Done():
+			cancel()
+		}
+	}()
+
+	return api.Unixfs().Add(c, file, func(target *options.UnixfsAddSettings) error {
 		if settings.CidVersion == 0 {
 			settings.CidVersion = target.CidVersion
 		}

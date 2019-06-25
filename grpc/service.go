@@ -16,7 +16,7 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 	"go.uber.org/zap"
 
-	ipfsconfig "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-config"
+	ipfsconfig "github.com/ipfs/go-ipfs-config"
 )
 
 var (
@@ -53,7 +53,7 @@ func Start(ctx context.Context, root string, configBindId uint32) (*Service, err
 	}
 
 	// 2. log
-	log, err := NewLogger(c)
+	log, err := NewLogger(c.Log)
 	if err != nil {
 		return nil, fmt.Errorf("NewLogger err: %v", err)
 	}

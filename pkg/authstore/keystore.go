@@ -96,7 +96,7 @@ func (s *KeyStore) GetKey(keyid []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	if ak.ExpiresAt > time.Now().Unix() {
+	if ak.ExpiresAt < time.Now().Unix() {
 		return nil, ErrKeyExpired
 	}
 

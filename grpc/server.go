@@ -251,12 +251,23 @@ func (s *Server) Restore(ctx context.Context, req *BackupRequest) (*empty.Empty,
 
 func (s *Server) AddVerifyKey(_ context.Context, req *AddVerifyKeyRequest) (*AddVerifyKeyReply, error) {
 	life := req.LifeSeconds
-	if life > s.config.MaxVerifyKeyLife {
-		life = s.config.MaxVerifyKeyLife
+
+	max := s.config.MaxVerifyKeyLife
+	if max == 0 {
+		max = DefaultMaxVerifyKeyLife
 	}
-	if life < s.config.MinVerifyKeyLife {
-		life = s.config.MinVerifyKeyLife
+	if life > max {
+		life = max
 	}
+
+	min := s.config.MinVerifyKeyLife
+	if min == 0 {
+		min = DefaultMinVerifyKeyLife
+	}
+	if life < min {
+		life = min
+	}
+
 	now := time.Now().Unix()
 	ak := authstore.AuthKey{
 		Key:       req.Key,

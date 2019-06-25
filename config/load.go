@@ -5,8 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/BurntSushi/toml"
-	"github.com/caarlos0/env"
+	"github.com/caarlos0/env/v6"
 	"github.com/creasty/defaults"
 	version "github.com/hashicorp/go-version"
 	"github.com/tidwall/gjson"
@@ -94,7 +93,7 @@ func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 	}
 
 	// 4. unmarshal toml
-	err = toml.Unmarshal(configContent, c)
+	err = tc.Unmarshal(configContent, c)
 	if err != nil {
 		return nil, err
 	}

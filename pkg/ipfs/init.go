@@ -11,16 +11,16 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/ipsn/go-ipfs/core"
-	"github.com/ipsn/go-ipfs/namesys"
-	"github.com/ipsn/go-ipfs/repo"
-	"github.com/ipsn/go-ipfs/repo/fsrepo"
-	logging "github.com/whyrusleeping/go-logging"
+	cmdkit "github.com/ipfs/go-ipfs-cmdkit"
+	config "github.com/ipfs/go-ipfs-config"
+	"github.com/ipfs/go-ipfs/core"
+	"github.com/ipfs/go-ipfs/namesys"
+	"github.com/ipfs/go-ipfs/repo"
+	"github.com/ipfs/go-ipfs/repo/fsrepo"
+	ipfslog "github.com/ipfs/go-log"
+	logWriter "github.com/ipfs/go-log/writer"
 
-	cmdkit "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-cmdkit"
-	config "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-ipfs-config"
-	ipfslog "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-log"
-	logWriter "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-log/writer"
+	logging "github.com/whyrusleeping/go-logging"
 )
 
 const (
@@ -235,11 +235,6 @@ func initializeIpnsKeyspace(repoRoot string) error {
 		return err
 	}
 	defer hi.Close()
-
-	err = hi.SetupOfflineRouting()
-	if err != nil {
-		return err
-	}
 
 	return namesys.InitializeKeyspace(ctx, hi.Namesys, hi.Pinning, hi.PrivateKey)
 }

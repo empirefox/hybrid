@@ -6,9 +6,9 @@ import (
 
 	"github.com/empirefox/hybrid/pkg/ipfsdial"
 	ipfs "github.com/ipfs/go-ipfs"
-	"github.com/ipsn/go-ipfs/repo/fsrepo"
+	"github.com/ipfs/go-ipfs/repo/fsrepo"
 
-	"github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p/p2p/protocol/identify"
+	"github.com/libp2p/go-libp2p/p2p/protocol/identify"
 )
 
 func GetVersion() *Version {

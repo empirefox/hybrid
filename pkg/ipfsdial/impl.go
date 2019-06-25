@@ -3,7 +3,7 @@ package ipfsdial
 import (
 	"strings"
 
-	inet "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-net"
+	inet "github.com/libp2p/go-libp2p-net"
 )
 
 const (
@@ -45,7 +45,7 @@ func parseProtocol(protocol string) (token []byte, ok bool) {
 		if s[3] != "token" {
 			return nil, false
 		}
-		return []byte(s[4]), ok
+		return []byte(s[4]), true
 	default:
 		return nil, false
 	}

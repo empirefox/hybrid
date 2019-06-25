@@ -13,10 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/BurntSushi/toml"
-	"github.com/denormal/go-gitignore"
-
-	"gopkg.in/h2non/filetype.v1"
+	gitignore "github.com/denormal/go-gitignore"
+	"github.com/h2non/filetype"
 )
 
 const (
@@ -113,7 +111,7 @@ func (z *gzipThenZip) generate(dst io.Writer) error {
 		return err
 	}
 
-	err = toml.NewEncoder(w).Encode(z.info)
+	err = tc.NewEncoder(w).Encode(z.info)
 	if err != nil {
 		return err
 	}

@@ -7,12 +7,12 @@ import (
 	_ "net/http/pprof"
 	"sync/atomic"
 
-	oldcmds "github.com/ipsn/go-ipfs/commands"
-	"github.com/ipsn/go-ipfs/core"
-	"github.com/ipsn/go-ipfs/core/corehttp"
+	oldcmds "github.com/ipfs/go-ipfs/commands"
+	"github.com/ipfs/go-ipfs/core"
+	"github.com/ipfs/go-ipfs/core/corehttp"
 
-	ma "github.com/ipsn/go-ipfs/gxlibs/github.com/multiformats/go-multiaddr"
-	manet "github.com/ipsn/go-ipfs/gxlibs/github.com/multiformats/go-multiaddr-net"
+	ma "github.com/multiformats/go-multiaddr"
+	manet "github.com/multiformats/go-multiaddr-net"
 )
 
 func (hi *Ipfs) ApiServer() http.Handler     { return &hi.apiServer }

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"strings"
 
 	"golang.org/x/crypto/ed25519"
 )
@@ -36,9 +37,19 @@ func main() {
 }
 
 func printJson(privkey ed25519.PrivateKey) {
+	pubkey := privkey.Public()
 	fmt.Printf(`{
   "Seed": "%x",
-  "Pubkey": "%x"
+  "Pubkey": "%x",
+  "PubkeyLiteral": "%s"
 }
-`, privkey.Seed(), privkey.Public())
+`, privkey.Seed(), pubkey, literal([]byte(pubkey.(ed25519.PublicKey))))
+}
+
+func literal(b []byte) string {
+	var sb strings.Builder
+	for _, o := range b {
+		sb.WriteString(fmt.Sprintf(`\x%x`, o))
+	}
+	return sb.String()
 }

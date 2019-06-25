@@ -1,10 +1,9 @@
 package ipfs
 
 import (
-	"github.com/ipsn/go-ipfs/core/corerepo"
-
-	cid "github.com/ipsn/go-ipfs/gxlibs/github.com/ipfs/go-cid"
-	mh "github.com/ipsn/go-ipfs/gxlibs/github.com/multiformats/go-multihash"
+	cid "github.com/ipfs/go-cid"
+	"github.com/ipfs/go-ipfs/core/corerepo"
+	mh "github.com/multiformats/go-multihash"
 )
 
 func (hi *Ipfs) GC() ([]mh.Multihash, error) {

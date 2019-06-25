@@ -40,3 +40,7 @@ protoc:
 l10n:
 	cd app && flutter pub pub run intl_translation:extract_to_arb --output-dir=lib/src/l10n lib/src/l10n/*.l10n.dart
 	cd app && flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/src/l10n --no-use-deferred-loading lib/src/l10n/*.l10n.dart lib/src/l10n/intl_*.arb
+
+
+protoc_test:
+	protoc -I. --dart-ext_out=dart_ext=field_names:app/lib/src protos/config.proto

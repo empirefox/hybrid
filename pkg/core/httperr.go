@@ -26,7 +26,15 @@ func (he *HttpErr) Write(w io.Writer) error {
 	}
 	defer res.Body.Close()
 
-	return res.Write(w)
+	err = res.Write(w)
+	if err != nil {
+		return err
+	}
+
+	if flusher, ok := w.(http.Flusher); ok {
+		flusher.Flush()
+	}
+	return nil
 }
 
 func (he *HttpErr) WriteResponse(w http.ResponseWriter) error {

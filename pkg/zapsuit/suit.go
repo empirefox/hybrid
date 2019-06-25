@@ -12,18 +12,19 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// TODO use github.com/getsentry/sentry-go
 type Config struct {
 	Dev bool
 
 	Level *zapcore.Level
 
-	// Target accepts "tcp://host:port?timeout=5s", file, sentryDSN or empty.
+	// Target accepts "tcp://host:port?timeout=5s", file, sentryDSN, empty or "nop".
 	// Register NewTCPSink to support tcp sink. Default is stderr.
 	Target string
 }
 
 func NewZap(config *Config, options ...zap.Option) (*zap.Logger, error) {
-	if config.Target == "" {
+	if config.Target == "nop" {
 		return zap.NewNop(), nil
 	}
 

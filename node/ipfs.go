@@ -9,7 +9,7 @@ import (
 	"github.com/empirefox/hybrid/pkg/ipfs"
 	"go.uber.org/zap"
 
-	"github.com/ipsn/go-ipfs/core"
+	"github.com/ipfs/go-ipfs/core"
 )
 
 func NewIpfs(ctx context.Context, c *config.Config, t *config.ConfigTree, log *zap.Logger) (*ipfs.Ipfs, error) {

@@ -1,12 +1,13 @@
 package node
 
 import (
+	"context"
 	"encoding/base64"
 	"io"
 	"os"
 	"path/filepath"
 
-	"github.com/BurntSushi/toml"
+	files "github.com/ipfs/go-ipfs-files"
 	"go.uber.org/zap"
 )
 
@@ -48,23 +49,32 @@ func (n *Node) OpenIntentFile(dir, name string) ([]io.ReadCloser, error) {
 func (n *Node) openIntentFile(dir, name string) ([]io.ReadCloser, error) {
 	path := filepath.Join(dir, name)
 	ext := filepath.Ext(name)
+
+	f, err := os.Open(path)
+	if err != nil {
+		n.log.Error("os.Open", zap.Error(err))
+		return nil, err
+	}
+
 	if ext == ".ipfs" {
+		defer f.Close()
 		var itfs IpfsTomlFiles
-		_, err := toml.DecodeFile(path, &itfs)
+		err = tc.NewDecoder(f).Decode(&itfs)
 		if err != nil {
-			n.log.Error("toml.DecodeFile", zap.Error(err))
+			n.log.Error("decode toml", zap.Error(err))
 			return nil, err
 		}
 
 		rcs := make([]io.ReadCloser, 0, len(itfs.Ipfs))
 		for _, itf := range itfs.Ipfs {
-			uf, err := n.ipfs.Get(itf.Path)
+			fnode, err := n.ipfs.Get(context.Background(), itf.Path)
 			if err != nil {
 				n.log.Error("ipfs.Get", zap.String("path", itf.Path), zap.Error(err))
 				return rcs, err
 			}
 
-			if uf.IsDirectory() {
+			uf, ok := fnode.(files.File)
+			if !ok {
 				uf.Close()
 				n.log.Error("ipfs path is dir", zap.String("path", itf.Path))
 				return rcs, os.ErrNotExist
@@ -73,12 +83,6 @@ func (n *Node) openIntentFile(dir, name string) ([]io.ReadCloser, error) {
 			rcs = append(rcs, toReadCloser(uf, itf.Base64))
 		}
 		return rcs, nil
-	}
-
-	f, err := os.Open(path)
-	if err != nil {
-		n.log.Error("os.Open", zap.Error(err))
-		return nil, err
 	}
 
 	return []io.ReadCloser{toReadCloser(f, ext == ".b64")}, nil

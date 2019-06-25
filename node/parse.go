@@ -15,9 +15,9 @@ import (
 	"github.com/empirefox/hybrid/pkg/proxy"
 	"go.uber.org/zap"
 
-	peer "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-peer"
-	ma "github.com/ipsn/go-ipfs/gxlibs/github.com/multiformats/go-multiaddr"
-	manet "github.com/ipsn/go-ipfs/gxlibs/github.com/multiformats/go-multiaddr-net"
+	peer "github.com/libp2p/go-libp2p-peer"
+	ma "github.com/multiformats/go-multiaddr"
+	manet "github.com/multiformats/go-multiaddr-net"
 )
 
 type ipfsServer struct {

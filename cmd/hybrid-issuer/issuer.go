@@ -16,7 +16,7 @@ import (
 var (
 	seedHex = flag.String("seed", "", "seed in hex, generate new key pair if not set")
 	kid     = flag.Uint64("kid", 0, "jwt header kid, must be uint64")
-	target  = flag.String("target", "", "target id in hex")
+	target  = flag.String("target", "", "target raw string")
 	expires = flag.Uint("expires", 7, "jwt claim expires, default 7 days")
 	subject = flag.String("subject", "", "jwt claim subject")
 	issuer  = flag.String("issuer", "", "jwt claim issuer")

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	core "github.com/ipsn/go-ipfs/core"
-	"github.com/ipsn/go-ipfs/core/corehttp"
-	namesys "github.com/ipsn/go-ipfs/namesys"
-	nsopts "github.com/ipsn/go-ipfs/namesys/opts"
+	core "github.com/ipfs/go-ipfs/core"
+	"github.com/ipfs/go-ipfs/core/corehttp"
+	namesys "github.com/ipfs/go-ipfs/namesys"
+	nsopts "github.com/ipfs/interface-go-ipfs-core/options/namesys"
 
 	isd "github.com/jbenet/go-is-domain"
 )

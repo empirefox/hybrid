@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/BurntSushi/toml"
 	"golang.org/x/tools/godoc/vfs"
 	"golang.org/x/tools/godoc/vfs/httpfs"
 	"golang.org/x/tools/godoc/vfs/zipfs"
@@ -57,7 +56,7 @@ func NewFileSystem(fs vfs.FileSystem) (*GzipHttpfs, error) {
 	defer rcs.Close()
 
 	metaInfo := new(ContentInfo)
-	_, err = toml.DecodeReader(rcs, metaInfo)
+	err = tc.NewDecoder(rcs).Decode(metaInfo)
 	if err != nil {
 		return nil, err
 	}

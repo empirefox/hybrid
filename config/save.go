@@ -3,8 +3,7 @@ package config
 import (
 	"os"
 
-	"github.com/BurntSushi/toml"
-	"github.com/caarlos0/env"
+	"github.com/caarlos0/env/v6"
 	"github.com/creasty/defaults"
 	"github.com/golang/protobuf/proto"
 	validator "gopkg.in/go-playground/validator.v9"
@@ -54,5 +53,5 @@ func SaveConfig(tree *ConfigTree, c *Config) error {
 	defer out.Close()
 
 	tosave.Basic.Version = ConfigVersion
-	return toml.NewEncoder(out).Encode(tosave)
+	return tc.NewEncoder(out).Encode(tosave)
 }

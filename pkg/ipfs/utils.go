@@ -1,8 +1,8 @@
 package ipfs
 
 import (
-	"github.com/ipsn/go-ipfs/core"
-	coreiface "github.com/ipsn/go-ipfs/core/coreapi/interface"
+	"github.com/ipfs/go-ipfs/core"
+	coreiface "github.com/ipfs/interface-go-ipfs-core"
 )
 
 func (hi *Ipfs) getDaemonNode() (*core.IpfsNode, error) {

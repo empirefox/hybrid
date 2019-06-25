@@ -5,11 +5,11 @@ import (
 	"net"
 	"sync"
 
-	inet "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-net"
-	p2pnet "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-net"
-	ipfspeer "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-peer"
-	pstore "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-peerstore"
-	pro "github.com/ipsn/go-ipfs/gxlibs/github.com/libp2p/go-libp2p-protocol"
+	inet "github.com/libp2p/go-libp2p-net"
+	p2pnet "github.com/libp2p/go-libp2p-net"
+	ipfspeer "github.com/libp2p/go-libp2p-peer"
+	pstore "github.com/libp2p/go-libp2p-peerstore"
+	pro "github.com/libp2p/go-libp2p-protocol"
 )
 
 type streamAddr struct {

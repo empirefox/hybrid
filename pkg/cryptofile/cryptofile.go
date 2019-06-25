@@ -6,9 +6,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/aead/poly1305"
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/chacha20poly1305"
+	"golang.org/x/crypto/poly1305"
 )
 
 const (

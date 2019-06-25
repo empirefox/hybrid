@@ -71,10 +71,13 @@ func NewIssuer(s *Signer) (*Issuer, error) {
 }
 
 func (i *Issuer) Issue(claims *jwt.Claims) (string, error) {
+	now := jwt.NumericDate(time.Now().Unix())
+	expiry := now + i.expires
+
 	claims.Subject = i.subject
 	claims.Issuer = i.issuer
-	claims.IssuedAt = jwt.NumericDate(time.Now().Unix())
-	claims.Expiry = claims.IssuedAt + i.expires
+	claims.IssuedAt = &now
+	claims.Expiry = &expiry
 	return jwt.Signed(i.signer).Claims(claims).CompactSerialize()
 }
 

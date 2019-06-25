@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync"
 
+	mg6 "github.com/empirefox/hybrid/pkg/ipfs/ipfs-6-to-7/migration"
 	gomigrate "github.com/ipfs/fs-repo-migrations/go-migrate"
 	mg0 "github.com/ipfs/fs-repo-migrations/ipfs-0-to-1/migration"
 	mg1 "github.com/ipfs/fs-repo-migrations/ipfs-1-to-2/migration"
@@ -13,14 +14,9 @@ import (
 	mg3 "github.com/ipfs/fs-repo-migrations/ipfs-3-to-4/migration"
 	mg4 "github.com/ipfs/fs-repo-migrations/ipfs-4-to-5/migration"
 	mg5 "github.com/ipfs/fs-repo-migrations/ipfs-5-to-6/migration"
-	mg6 "github.com/ipfs/fs-repo-migrations/ipfs-6-to-7/migration"
 	mfsr "github.com/ipfs/fs-repo-migrations/mfsr"
 	"github.com/ipfs/fs-repo-migrations/stump"
-
-	"github.com/ipsn/go-ipfs/repo/fsrepo"
-	// hack on:
-	// _ "github.com/ipfs/fs-repo-migrations/ipfs-6-to-7/vendor/gx/ipfs/QmTEmsyNnckEq8rEfALfdhLHjrEHGoSGFDrAYReuetn7MC/go-net/trace"
-	// _ "github.com/ipfs/fs-repo-migrations/ipfs-6-to-7/vendor/gx/ipfs/QmdKhi5wUQyV9i3GcTyfUmpfTntWjXu8DcyT9HyNbznYrn/badger/y"
+	"github.com/ipfs/go-ipfs/repo/fsrepo"
 )
 
 var migrations = []gomigrate.Migration{
@@ -44,7 +40,7 @@ func init() {
 }
 
 // MigrateDirectly require hack on:
-// github.com/ipfs/fs-repo-migrations/ipfs-6-to-7
+// github.com/empirefox/hybrid/pkg/ipfs/ipfs-6-to-7
 func MigrateDirectly(repoPath string, to int) error {
 	migrationMu.Lock()
 	defer migrationMu.Unlock()
