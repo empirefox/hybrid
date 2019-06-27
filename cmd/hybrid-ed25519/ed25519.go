@@ -20,7 +20,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		printJson(privkey)
+		printToml(privkey)
 		return
 	}
 
@@ -33,16 +33,16 @@ func main() {
 	}
 
 	privkey := ed25519.NewKeyFromSeed(seed)
-	printJson(privkey)
+	printToml(privkey)
 }
 
-func printJson(privkey ed25519.PrivateKey) {
+func printToml(privkey ed25519.PrivateKey) {
 	pubkey := privkey.Public()
-	fmt.Printf(`{
-  "Seed": "%x",
-  "Pubkey": "%x"
-}
-`, privkey.Seed(), pubkey)
+	fmt.Printf(`
+Seed = "%x"
+Pubkey = "%x"
+PKLiteral = "%s"
+`, privkey.Seed(), pubkey, literal([]byte(pubkey.(ed25519.PublicKey))))
 }
 
 func literal(b []byte) string {
