@@ -40,16 +40,15 @@ func printJson(privkey ed25519.PrivateKey) {
 	pubkey := privkey.Public()
 	fmt.Printf(`{
   "Seed": "%x",
-  "Pubkey": "%x",
-  "PubkeyLiteral": "%s"
+  "Pubkey": "%x"
 }
-`, privkey.Seed(), pubkey, literal([]byte(pubkey.(ed25519.PublicKey))))
+`, privkey.Seed(), pubkey)
 }
 
 func literal(b []byte) string {
 	var sb strings.Builder
 	for _, o := range b {
-		sb.WriteString(fmt.Sprintf(`\x%x`, o))
+		sb.WriteString(fmt.Sprintf(`\x%02x`, o))
 	}
 	return sb.String()
 }

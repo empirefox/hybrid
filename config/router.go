@@ -1,7 +1,7 @@
 package config
 
 type routerItem struct {
-	Name  string       `toml:",omitempty"`
+	Name  string
 	Adp   *AdpRouter   `toml:",omitempty"`
 	Ipnet *IPNetRouter `toml:",omitempty"`
 }

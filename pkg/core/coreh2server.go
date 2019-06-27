@@ -20,6 +20,12 @@ func (core *Core) Serve(listener net.Listener) error {
 	s2 := &http2.Server{}
 	http2.ConfigureServer(s1, s2)
 
+	go func() {
+		select {
+		case <-core.done:
+			s1.Close()
+		}
+	}()
 	return netutil.SimpleServe(listener, func(c net.Conn) {
 		s2.ServeConn(c, &http2.ServeConnOpts{BaseConfig: s1})
 		core.Log.Debug("ServeConn end")
@@ -27,18 +33,9 @@ func (core *Core) Serve(listener net.Listener) error {
 }
 
 func (core *Core) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	host := r.Host[1:]
-
-	switch r.Host[0] {
-	case HostHttpPrefix:
-		r.URL.Host = strings.TrimSuffix(host, ":80")
+	if r.Method != "CONNECT" {
 		r.URL.Scheme = "http"
-	case HostHttpsPrefix:
-		r.URL.Host = strings.TrimSuffix(host, ":443")
-		r.URL.Scheme = "https"
-	default:
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		r.URL.Host = strings.TrimSuffix(r.Host, ":80")
 	}
 
 	r.ProtoMajor = 1

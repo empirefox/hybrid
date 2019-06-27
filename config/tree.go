@@ -11,6 +11,14 @@ var (
 )
 
 func NewTree(rootPath string) (*ConfigTree, error) {
+	if rootPath == "" {
+		homedir, err := os.UserHomeDir()
+		if err != nil {
+			return nil, err
+		}
+		rootPath = filepath.Join(homedir, ".hybrid")
+	}
+
 	rootPath, err := filepath.Abs(os.ExpandEnv(rootPath))
 	if err != nil {
 		return nil, err
@@ -36,9 +44,5 @@ func NewTree(rootPath string) (*ConfigTree, error) {
 }
 
 func NewDefaultTree() (*ConfigTree, error) {
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
-	}
-	return NewTree(filepath.Join(homedir, ".hybrid"))
+	return NewTree("")
 }

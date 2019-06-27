@@ -76,16 +76,10 @@ func (h2 *H2Client) Proxy(c *core.Context, idx string) error {
 		req.Body = c.NopCloserBody()
 	}
 
-	// Host => authority|target, so the real schema can be ignored
-	if req.URL.Scheme == "https" {
-		req.Host = string(core.HostHttpsPrefix) + req.Host
-	} else {
-		req.Host = string(core.HostHttpPrefix) + req.Host
-	}
-
-	// used for underline conn dial
-	req.URL.Scheme = "http"
+	// Host => authority|target
+	// URL.Host used for underline conn dial
 	req.URL.Host = idx // => for dial, this will not be send because of req.Host
+	req.URL.Scheme = "http"
 
 	return c.PipeTransport(h2.tr)
 }

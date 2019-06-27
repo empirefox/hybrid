@@ -23,14 +23,18 @@ clean:
 	rm -f ${APP_PATH}/android/go/*.jar
 	rm -rf ${APP_PATH}/ios/Frameworks/Gomobile.framework
 
+protoc_go:
+	protoc -I. --go_out=plugins=grpc:protos/_gen_tmp protos/authstore.proto
+	protoc -I. --go_out=plugins=grpc:protos/_gen_tmp protos/config.proto
+	protoc -I. --go_out=plugins=grpc:protos/_gen_tmp protos/validators.proto
+	protoc -I. --go_out=plugins=grpc:protos/_gen_tmp protos/grpc.proto
 
-protoc:
-	protoc -I../../golang/protobuf/ptypes/empty --dart_out=grpc:app/lib/src/google/protobuf empty.proto
-	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/authstore.proto
-	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/config.proto
-	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/validators.proto
-	protoc -I. --go_out=plugins=grpc:../../.. --dart_out=grpc:app/lib/src protos/grpc.proto
+	cp -Rfv protos/_gen_tmp/github.com/empirefox/hybrid/** .
 	protoc-go-inject-tag -input=config/config.pb.go
+
+protoc_dart:
+	protoc -I${GOPATH}/src/github.com/golang/protobuf/ptypes/empty --dart_out=grpc:app/lib/src/google/protobuf empty.proto
+	cd protos && protoc -I. --dart_out=grpc:app/lib/src/protos *.proto
 
 	protoc -I. --dart-ext_out=dart_ext=defaults+field_names+field_l10n:app/lib/src protos/config.proto
 	dartfmt -w app/lib/src/protos/*.field.names.dart

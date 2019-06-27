@@ -7,6 +7,7 @@ import (
 )
 
 type IPNetRouter struct {
+	Id   string
 	Skip bool
 
 	IPs  []net.IP
@@ -19,6 +20,7 @@ type IPNetRouter struct {
 	Unmatched core.Proxy
 }
 
+func (r *IPNetRouter) Name() string   { return r.Id }
 func (r *IPNetRouter) Disabled() bool { return r.Skip }
 
 func (r *IPNetRouter) Route(c *core.Context) core.Proxy {

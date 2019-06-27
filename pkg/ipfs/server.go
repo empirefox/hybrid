@@ -105,10 +105,10 @@ func newHttpHandler(node *core.IpfsNode, maddr ma.Multiaddr, opts []corehttp.Ser
 	if err != nil {
 		return nil, err
 	}
-	defer ln.Close()
 
 	handler, err := makeHandler(node, manet.NetListener(ln), opts...)
 	if err != nil {
+		ln.Close()
 		return nil, err
 	}
 

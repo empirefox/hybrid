@@ -49,9 +49,6 @@ require (
 	github.com/pmezard/adblock v0.0.0-20171028110701-edfb97ad89cd
 	github.com/stoewer/go-strcase v1.0.2
 	github.com/stretchr/testify v1.3.0
-	github.com/tidwall/gjson v1.2.1
-	github.com/tidwall/match v1.0.1 // indirect
-	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/whyrusleeping/go-logging v0.0.0-20170515211332-0457bb6b88fc
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5

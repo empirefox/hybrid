@@ -70,6 +70,7 @@ func (n *Node) newRouter(raw *config.RouterItem) (core.Router, error) {
 func (n *Node) newAdpRouter(name string, raw *config.AdpRouter) (*proxy.AdpRouter, error) {
 	config := proxy.AdpRouterConfig{
 		Log:                 n.log,
+		Name:                name,
 		Disabled:            n.routerDisabled[name],
 		EtcHostsIpAsBlocked: raw.EtcHostsIpAsBlocked,
 		Dev:                 raw.Dev,
@@ -163,6 +164,7 @@ func (n *Node) newNetRouter(name string, raw *config.IPNetRouter) (*proxy.IPNetR
 	}
 
 	router := proxy.IPNetRouter{
+		Id:   name,
 		Skip: n.routerDisabled[name],
 		IPs:  ips,
 		Nets: nets,

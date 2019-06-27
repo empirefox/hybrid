@@ -143,7 +143,7 @@ message IPNetRouter {
 // routers end
 
 message RouterItem {
-  // @inject_tag: toml:",omitempty" validate:"omitempty,hostname"
+  // @inject_tag: validate:"hostname"
   string name = 1;
   oneof router {
     AdpRouter adp = 2;
@@ -159,8 +159,11 @@ message RouterItem {
 // HYBRID_FILE_SERVERS_DISABLED=a,b,c
 // HYBRID_ROUTER_DISABLED=a,b,c
 message Config {
+  // @inject_tag: default:"{}"
   Basic basic = 1;
+  // @inject_tag: default:"{}"
   Log log = 2;
+  // @inject_tag: default:"{}"
   Ipfs ipfs = 3;
 
   repeated IpfsServer ipfsServers = 4;

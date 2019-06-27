@@ -9,6 +9,7 @@ type H2Proxy struct {
 	idx    string
 }
 
+func (p *H2Proxy) Name() string { return p.idx }
 func (p *H2Proxy) HttpErr(c *core.Context, code int, info string) {
 	he := &core.HttpErr{
 		Code:       code,

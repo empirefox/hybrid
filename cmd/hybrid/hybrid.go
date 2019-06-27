@@ -76,7 +76,6 @@ func main() {
 	}
 
 	log.Printf("Hybrid started!")
-	<-ctx.Done()
 	s.WaitUntilStopped(context.Background(), nil)
 }
 

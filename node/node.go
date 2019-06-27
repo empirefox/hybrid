@@ -33,8 +33,11 @@ type Config struct {
 
 	Verify ipfsdial.VerifyFunc
 
-	// LocalServers can be nil
+	// LocalServers for *.hybrid can be nil
 	LocalServers map[string]http.Handler
+
+	// LocalServers for ipfs.io can be nil
+	HijackServers map[string]http.Handler
 
 	// ConfigBindId as key of StartProxy for Config.Bind.
 	// The value should not be used by user.
@@ -63,6 +66,7 @@ type Node struct {
 func New(nc Config, t *config.ConfigTree) (*Node, error) {
 	c := nc.Config
 	localServers := nc.LocalServers
+	hijackServers := nc.HijackServers
 	log := nc.Log
 
 	n := Node{
@@ -119,6 +123,7 @@ func New(nc Config, t *config.ConfigTree) (*Node, error) {
 		}
 		fs, err := proxy.NewFileProxyRouterClient(proxy.FileClientConfig{
 			Log:      log,
+			Name:     name,
 			Dev:      s.Dev,
 			Disabled: n.fsDisabled[name],
 			Zip:      filepath.Join(n.fileRootDir, s.Zip),
@@ -154,15 +159,24 @@ func New(nc Config, t *config.ConfigTree) (*Node, error) {
 		routers[i] = router
 	}
 
+	setIpfsHijack := func(h http.Handler) {
+		if hijackServers == nil {
+			hijackServers = make(map[string]http.Handler)
+		}
+		hijackServers["ipfs.io"] = h
+	}
+
 	if localServers == nil {
 		localServers = make(map[string]http.Handler)
 	}
 	if c.Ipfs.ApiServerName != "" {
 		// web: localStorage.setItem('ipfsApi', '/dns4/api.ipfs.with.hybrid/tcp/80')
 		localServers[c.Ipfs.ApiServerName] = n.ipfs.ApiServer()
+		setIpfsHijack(n.ipfs.ApiServer())
 	}
 	if c.Ipfs.GatewayServerName != "" {
 		localServers[c.Ipfs.GatewayServerName] = n.ipfs.GatewayServer()
+		setIpfsHijack(n.ipfs.GatewayServer())
 	}
 
 	cc := &core.ContextConfig{
@@ -177,7 +191,9 @@ func New(nc Config, t *config.ConfigTree) (*Node, error) {
 		Routers:       routers,
 		Proxies:       n.proxies,
 		LocalServers:  localServers,
+		HijackServers: hijackServers,
 	}
+	n.core.Init()
 
 	ipfsListeners := make([]*ipfs.Listener, 0, 1)
 	// add listener for /hybrid/
@@ -253,6 +269,7 @@ func (n *Node) Go(f func() error)   { n.eg.Go(f) }
 
 func (n *Node) Close() (err error) {
 	n.closeOnce.Do(func() {
+		n.core.Close()
 		for _, ln := range n.ipfsListeners {
 			ln.Close()
 		}

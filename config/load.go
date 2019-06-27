@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -8,7 +9,7 @@ import (
 	"github.com/caarlos0/env/v6"
 	"github.com/creasty/defaults"
 	version "github.com/hashicorp/go-version"
-	"github.com/tidwall/gjson"
+	"github.com/naoina/toml"
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
@@ -35,6 +36,8 @@ const (
 	LoadTagsNoErr = LoadTagEnv | LoadTagDefault
 )
 
+var ErrNoVersion = errors.New("no Basic.Version found")
+
 func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 	var err error
 	if tree == nil {
@@ -49,7 +52,7 @@ func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 	}
 
 	// 1. load env
-	if tags&LoadTagEnv == 1 {
+	if tags&LoadTagEnv != 0 {
 		err = env.Parse(c)
 		if err != nil {
 			return nil, err
@@ -57,7 +60,7 @@ func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 	}
 
 	// 2. load default
-	if tags&LoadTagDefault == 1 {
+	if tags&LoadTagDefault != 0 {
 		err = defaults.Set(c)
 		if err != nil {
 			return nil, err
@@ -74,9 +77,14 @@ func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 		return nil, err
 	}
 
+	tt, err := toml.Parse(configContent)
+	if err != nil {
+		return nil, err
+	}
+
 	// 3. check config version
-	if tags&LoadTagCheckVersion == 1 {
-		ver, err := version.NewVersion(gjson.GetBytes(configContent, "Version").String())
+	if tags&LoadTagCheckVersion != 0 {
+		ver, err := version.NewVersion(readVersion(tt))
 		if err != nil {
 			return nil, err
 		}
@@ -93,13 +101,13 @@ func LoadConfig(tree *ConfigTree, tags int, c *Config) (*Config, error) {
 	}
 
 	// 4. unmarshal toml
-	err = tc.Unmarshal(configContent, c)
+	err = tc.UnmarshalTable(tt, c)
 	if err != nil {
 		return nil, err
 	}
 
 	// 5. do struct validate
-	if tags&LoadTagValidate == 1 {
+	if tags&LoadTagValidate != 0 {
 		validate := validator.New()
 		err = validate.Struct(c)
 		if err != nil {

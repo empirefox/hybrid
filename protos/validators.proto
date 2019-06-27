@@ -3,8 +3,6 @@ syntax = "proto3";
 package protos;
 option go_package = "github.com/empirefox/hybrid/grpc";
 
-import "google/protobuf/any.proto";
-
 message ValidatorV9Error {
   string tag = 1;
   string actualTag = 2;

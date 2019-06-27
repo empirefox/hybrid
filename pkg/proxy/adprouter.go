@@ -20,6 +20,7 @@ var (
 
 type AdpRouterConfig struct {
 	Log       *zap.Logger
+	Name      string
 	Disabled  bool
 	Blocked   core.Proxy
 	Unblocked core.Proxy
@@ -31,6 +32,7 @@ type AdpRouterConfig struct {
 
 type AdpRouter struct {
 	log          *zap.Logger
+	name         string
 	config       AdpRouterConfig
 	adpMatcher   *adblock.RuleMatcher
 	blockedIps   map[string]bool
@@ -40,6 +42,7 @@ type AdpRouter struct {
 func NewAdpRouter(config AdpRouterConfig) (*AdpRouter, error) {
 	r := &AdpRouter{
 		log:        config.Log,
+		name:       config.Name,
 		config:     config,
 		adpMatcher: adblock.NewMatcher(),
 		blockedIps: make(map[string]bool),
@@ -50,6 +53,8 @@ func NewAdpRouter(config AdpRouterConfig) (*AdpRouter, error) {
 	}
 	return r, nil
 }
+
+func (r *AdpRouter) Name() string { return r.name }
 
 func (r *AdpRouter) Route(c *core.Context) core.Proxy {
 	if blocked := r.blocked(c); blocked {

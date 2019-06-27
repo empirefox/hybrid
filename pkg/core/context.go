@@ -68,7 +68,7 @@ func NewContextFromHandler(cc *ContextConfig, w http.ResponseWriter, req *http.R
 func newContext(cc *ContextConfig, req *http.Request, resp http.ResponseWriter, conn net.Conn) (*Context, error) {
 	isConnect := req.Method == "CONNECT"
 	if !isConnect && req.URL.Scheme == "" {
-		// parsing CONNECT removed schema
+		// parsing CONNECT removed scheme
 		return nil, ErrRequestURI
 	}
 
@@ -296,7 +296,6 @@ func (c *Context) Direct() error {
 	}
 	defer remote.Close()
 
-	req := c.Request
 	if c.Connect {
 		c.writeConncectOK()
 		go c.copyToRemote(remote)
@@ -304,6 +303,7 @@ func (c *Context) Direct() error {
 		return nil
 	}
 
+	req := c.Request
 	// reverse to c.Writer
 	// must remove connection header
 	if req.Header != nil {
@@ -317,7 +317,7 @@ func (c *Context) Direct() error {
 	return nil
 }
 
-// PipeTransport requests with rp, waits for pipe end.
+// PipeTransport requests with tp, waits for pipe end.
 func (c *Context) PipeTransport(tp http.RoundTripper) error {
 	req := c.Request
 

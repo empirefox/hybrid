@@ -7,6 +7,8 @@ import (
 )
 
 type Router interface {
+	Name() string
+
 	// Disabled will be ignored
 	Disabled() bool
 
@@ -15,12 +17,14 @@ type Router interface {
 }
 
 type Proxy interface {
+	Name() string
 	Do(c *Context) error
 	HttpErr(c *Context, code int, info string)
 }
 
 type directProxy struct{}
 
+func (directProxy) Name() string { return "DIRECT" }
 func (directProxy) HttpErr(c *Context, code int, info string) {
 	he := &HttpErr{
 		Code:       code,
@@ -51,6 +55,7 @@ func NewExistProxy(name, host string, keepAlive bool) (*ExistProxy, error) {
 	return &ExistProxy{name, host, &tp, keepAlive}, nil
 }
 
+func (p *ExistProxy) Name() string { return p.name }
 func (p *ExistProxy) HttpErr(c *Context, code int, info string) {
 	he := &HttpErr{
 		Code:       code,

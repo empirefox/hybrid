@@ -16,6 +16,7 @@ var (
 
 type FileClientConfig struct {
 	Log      *zap.Logger
+	Name     string
 	Dev      bool
 	Disabled bool
 	Zip      string
@@ -25,6 +26,7 @@ type FileClientConfig struct {
 // FileProxyRouterClient implements both Router and Proxy.
 type FileProxyRouterClient struct {
 	log    *zap.Logger
+	name   string
 	config FileClientConfig
 	hfs    *zipfs.GzipHttpfs
 	io.Closer
@@ -39,11 +41,14 @@ func NewFileProxyRouterClient(config FileClientConfig) (*FileProxyRouterClient, 
 
 	return &FileProxyRouterClient{
 		log:    config.Log,
+		name:   config.Name,
 		config: config,
 		hfs:    hfs,
 		Closer: closer,
 	}, nil
 }
+
+func (r *FileProxyRouterClient) Name() string { return r.name }
 
 // Route implements Router
 func (r *FileProxyRouterClient) Route(c *core.Context) core.Proxy {
